@@ -198,3 +198,63 @@ ___
     ```
     
     플러그인 적용 시 미리 npm 설치 후 서버를 재식작해야 함에 주의!
+
+___
+## #4. Authentication UI
+___
+
+1. 하이드레이션 경고
+    ```
+    Error: Text content does not match server-rendered HTML.
+    Warning: Text content did not match. Server: "Dark" Client: "Light"
+    See more info here: https://nextjs.org/docs/messages/react-hydration-error
+    ```
+    넥스트에서 뜨는 이 경고는 서버에서 랜더링한 결과와 클라이언트에서 랜더링한 결과가 다를 때 발생한다.<br/>
+    주로, 클라이언트 컴포넌트에서 발생하는데,<br/>
+    아래와 같이 서버사이드 랜더링 결과를 클라이언트와 생애주기를 동기화해 해결 가능하다.
+    ```javascript
+    'use client';
+    import { useTheme } from 'next-themes';
+    import { useEffect, useState } from 'react';
+    
+    export function ThemeToggle() {
+      const { systemTheme, theme, setTheme } = useTheme();
+      const currentTheme = theme === 'system' ? systemTheme : theme;
+      const [isMounted, setIsMounted] = useState(false);
+        
+      useEffect(() => {
+        setIsMounted(true);
+      }, []);
+        
+      return (
+        isMounted && (
+          <div className="absolute top-0 right-0 z-10">
+            <div className="flex gap-2 *:p-2">
+              <button
+                className="bg-teal-500 dark:bg-gray-100 dark:text-gray-900 rounded-md"
+                onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
+              >
+                {currentTheme === 'dark' ? 'Light' : 'Dark'}
+              </button>
+            </div>
+          </div>
+        )
+      );
+    }
+    ```
+2. 스타일 정보 없음 경고
+
+    ```
+    Warning: Extra attributes from the server: class,style,data-inboxsdk-session-id
+     at html
+    ...
+    ```
+
+    개발자 도구 요소에서 body 태그 style 정보가 없어 발생
+
+   ```html
+   <body style class='__className_aaf875 bg-gray-100 dark:bg-gray-800 max-w-screen-sm...'>
+    ...       
+   </body>
+   ```
+   딱히 해결책은 없어 보인다. 경고니 무시하자.
