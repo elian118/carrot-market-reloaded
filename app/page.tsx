@@ -1,25 +1,55 @@
+'use client';
+import { useRef, useState } from 'react';
+
 export default function Home() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const toggleLoading = () => {
+    setIsLoading(!isLoading);
+    cardRef.current?.classList.toggle('*:animate-pulse');
+  };
+
   return (
-    <main className="bg-gray-100 sm:bg-red-100 md:bg-green-100 lg:bg-cyan-100 xl:bg-orange-100 2xl:bg-purple-100 h-screen flex items-center justify-center p-5">
-      <div className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col md:flex-row gap-2 md:items-start ring ring-transparent transition-shadow has-[:invalid]:ring-red-100">
-        <div className="flex flex-col md:w-full *:outline-none">
-          <input
-            className="w-full rounded-full h-10 bg-gray-200 py-6 pl-5 ring ring-transparent focus:ring-green-500 focus:ring-offset-2 transition-shadow placeholder:drop-shadow invalid:focus:ring-red-500 peer"
-            type="text"
-            placeholder="Email address"
-            required // peer-required 연동
-          />
-          <span className="text-red-500 font-medium hidden peer-invalid:block px-4 pt-1">
-            Email is required.
-          </span>
-        </div>
-        <button
-          id="logInBtn"
-          className="bg-black bg-opacity-50 text-white py-2 md:w-1/4 rounded-full active:scale-90 transition-transform font-medium focus:scale-90 md:px-8 md:h-12"
-        >
-          Log in
-        </button>
+    <main className="bg-gray-100 sm:bg-red-100 md:bg-green-100 lg:bg-cyan-100 xl:bg-orange-100 2xl:bg-purple-100 h-screen flex items-center justify-center p-5 flex-col gap-4">
+      <div
+        ref={cardRef}
+        className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col gap-3"
+      >
+        {['Elian', 'Me', 'You', 'Yourself', ''].map((person, idx) => (
+          <div key={idx} className="flex items-center gap-5">
+            <div className="size-10 bg-blue-400 rounded-full" />
+            {isLoading ? (
+              <>
+                <div className="bg-gray-100 h-5 w-1/2 rounded-full" />
+                <div className="bg-gray-100 h-5 w-1/3 rounded-full" />
+              </>
+            ) : (
+              <>
+                <span className="text-lg font-medium empty:w-24 empty:h-5 empty:rounded-full empty:animate-pulse empty:bg-gray-300">
+                  {person}
+                </span>
+                <div className="size-6 bg-red-500 text-white flex items-center justify-center rounded-full relative">
+                  <span className="z-10">{idx}</span>
+                  <div className="size-6 bg-red-500 text-white flex items-center justify-center rounded-full absolute animate-ping " />
+                </div>
+                <div className="size-6 animate-bounce flex items-center justify-center rounded-full">
+                  <span>🎉</span>
+                </div>
+                <div className="size-6 animate-spin text-white flex items-center justify-center rounded-full">
+                  <span>⌛️</span>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
+      <button
+        className="bg-teal-500 text-white px-3 py-2 rounded-xl"
+        onClick={toggleLoading}
+      >
+        {isLoading ? 'Loading' : 'has loaded'}
+      </button>
     </main>
   );
 }
@@ -61,4 +91,26 @@ export default function Home() {
     손자 이상 깊은 요소까지 감별하는 듯하다.
 
     이러한 동적 스타일 적용은 최근 업데이트 된 강력한 CSS 고유 기능으로 제공되며 가상 클래스 기반으로 작동한다.
+
+  6. 배열 스타일
+    6-1. odd:[className] even:[className]
+
+      odd:bg-gray-100 even:bg-cyan-100
+
+      map 배열 메서드로 처리한 배열 컴포넌트 부모에서 적용 가능
+      odd - 홀수, even - 짝수
+
+    6.2 first:[className], last:[className]
+
+      first:border-t-0
+      last:border-b-0
+
+      배열 요소 중 맨 처음(first) 또는 마지막(last)에만 지정 스타일 적용
+
+    6.3 empty:[className]
+
+      empty:w-24 empty:h-5 empty:rounded-full empty:animate-pulse empty:bg-gray-300
+
+      자식으로 배치되어야 할 배열 정보가 빈 문자열 처럼 비어 있다고 판명된 경우, 지정된 스타일 적용
+
 */
