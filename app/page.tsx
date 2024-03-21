@@ -63,7 +63,9 @@ export default function Home() {
           <span className="group-focus-within:block hidden text-red-500">
             Make sure it is a valid email...
           </span>
-          <button className="bg-teal-500 text-white px-3 py-2 rounded-xl">Submit</button>
+          <button className="text-white px-3 py-2 rounded-sexy-name bg-[#543cb8]">
+            Submit
+          </button>
         </div>
       </div>
     </main>
@@ -139,4 +141,39 @@ export default function Home() {
       이 관계는 group 클래스가 속한 부모와 그 자식 요소들에 적용된다.
       * group-focus-within:block - 해당 요소가 안쪽으로 포커싱 돼 있을 때 요소를 보여준다는 의미
 
+    8. JIT 컴파일러 활용하기
+
+      테일윈드는 단순한 유틸리티 클래스 모음집이 아니며,
+      수정 즉시 CSS 컴파일링을 수행하는 JIT 컴파일러다.
+
+      따라서, 반복적으로 사용할 특정 스타일 속성이 있다면,
+      tailwind.config.ts > theme.extends.[스타일 속성]
+      지정해 추가 유틸리티 클래스로 사용하는 것도 가능하다.
+
+      // tailwind.config.ts
+      contents: {
+        ...
+      },
+      theme: {
+        extend: {
+          margin: {
+            tomato: '120px',
+          },
+          borderRadius: {
+            'sexy-name': '11.11px',
+          },
+        },
+      },
+      plugins: [],
+
+      이렇게 추가된 클래스는 tailwind intellisense 에서도 자동 감지된다.
+
+      <button className="text-white px-3 py-2 rounded-sexy-name bg-[#543cb8]">
+        Submit
+      </button>
+
+      // rounded-sexy-name 에 마우스 올려뒀을 때 컴파일된 css 정보
+      .rounded-sexy-name {
+          border-radius: 11.11px;
+      }
 */
