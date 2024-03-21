@@ -24,7 +24,7 @@ ___
 
 3. peer
     <br/><br/>
-    if input className includes peer,
+    if input className includes peer,<br/>
     other brother elements includes className like 'peer-invalid:block' will activate style.
     <br/><br/>
     형제의 peer 가 지정된 폼 요소 속성 변경을 감지해
@@ -181,13 +181,13 @@ ___
 
     간단하게 프로젝트에 해당 플러그인을 추가 및 적용(오버라이드)할 수 있다.
     <br/><br/>
-    예를 들어, daisyUI(https://daisyui.com/) 는 @layer components 를 오버라이드한 플러그인을 제공하며
+    예를 들어, [daisyUI](https://daisyui.com)는 @layer components 를 오버라이드한 플러그인을 제공하며
 
     여기서 다양한 종류의 UI 스타일들을 특정 클래스명을 입력하는 것만으로 간단하게 스타일링할 수 있다.
     <br/><br/>
     테일윈드에서 기본 제공하는
 
-    4종의 공식 플러그인(https://tailwindcss.com/docs/plugins)도 아주 쓸 만하다.
+    [4종의 공식 플러그인](https://tailwindcss.com/docs/plugins)도 아주 쓸 만하다.
     ```javascript
     plugins: [
         require('@tailwindcss/typography'),
