@@ -1,20 +1,19 @@
 export default function Home() {
   return (
     <main className="bg-gray-100 sm:bg-red-100 md:bg-green-100 lg:bg-cyan-100 xl:bg-orange-100 2xl:bg-purple-100 h-screen flex items-center justify-center p-5">
-      <div className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col md:flex-row gap-2">
-        <div className="flex flex-col">
+      <div className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col md:flex-row gap-2 md:items-start">
+        <div className="flex flex-col md:w-full">
           <input
             className="w-full rounded-full h-10 bg-gray-200 py-6 pl-5 outline-none ring ring-transparent focus:ring-green-500 focus:ring-offset-2 transition-shadow placeholder:drop-shadow invalid:focus:ring-red-500 peer"
             type="email"
             placeholder="Email address"
             required // peer-required 연동
           />
-          <span className="text-red-500 font-medium hidden peer-invalid:block">
+          <span className="text-red-500 font-medium hidden peer-invalid:block px-4 pt-1">
             Email is required.
           </span>
         </div>
-
-        <button className="bg-black bg-opacity-50 text-white py-2 rounded-full active:scale-90 transition-transform font-medium focus:scale-90 outline-none md:px-8">
+        <button className="bg-black bg-opacity-50 text-white py-2 md:w-1/4 rounded-full active:scale-90 transition-transform font-medium focus:scale-90 outline-none md:px-8 md:h-12">
           Log in
         </button>
       </div>
@@ -33,4 +32,12 @@ export default function Home() {
   2. 그라디안트 효과 주기
 
     bg-gradient-to-tr from-cyan-500 via-yellow-400 to-purple-400
+
+  3. peer
+
+    if input className includes peer,
+    other brother elements includes className like 'peer-invalid:block' will activate style.
+
+    형제의 peer 가 지정된 폼 요소 속성 변경을 감지해 peer- 접두어를 같은 형제에 사용함으로써 조건부 스타일을 활성화하는 수정자
+    같은 형제 요소끼리만 적용 가능 - peer 영역을 벗어나면 peer-[className] 효과가 발동하지 않는다.
 */
