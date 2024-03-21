@@ -54,6 +54,9 @@ export default function Home() {
         ref={cardRef}
         className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col gap-3"
       >
+        <a href="https://www.google.com/" target="_blank">
+          link to Google
+        </a>
         <div className="group flex flex-col gap-2">
           <input
             className="bg-gray-100 w-full outline-none p-2 rounded-md"
@@ -63,9 +66,7 @@ export default function Home() {
           <span className="group-focus-within:block hidden text-red-500">
             Make sure it is a valid email...
           </span>
-          <button className="text-white px-3 py-2 rounded-sexy-name bg-[#543cb8]">
-            Submit
-          </button>
+          <button className="btn">Submit</button>
         </div>
       </div>
     </main>
@@ -177,4 +178,37 @@ export default function Home() {
       .rounded-sexy-name {
           border-radius: 11.11px;
       }
+
+  9. 디렉티브
+    // global.css
+    @tailwind base; // 테일윈드가 지정한 기본 스타일이 적용된 CSS
+    @tailwind components;
+    @tailwind utilities; // 테일윈드 유틸리티 클래스 모음집(placeholder). 테일윈드 인텔리센스는 여기서 개발자가 입력한 클래스들을 찾아내고, 테일윈드 또한 이를 기반으로 스타일을 찾아 CSS 를 컴파일링한다.
+
+    위 순서대로 돼 있는건, 아래 코드가 윗 코드를 재정의(오버라이드)하거나
+    코드를 추가하는 방식으로 작동하기 때문
+
+    디렉티브는 아래와 같이 각각 레이어를 추가해 css 를 오버라이드할 수도 있다.
+
+    @layer base {
+      a {
+        @apply text-blue-500 // 모든 a 태그 요소에 파랑500 색상 적용
+      }
+    }
+
+    // 아래와 같이 유틸리티 클래스를 재정의하는 것도 가능하다.
+    // 물론, tailwind.config.ts 에서 extends 를 사용하는 것과 결과가 같다.
+    @layer utilities {
+      .text-bigger-hello {
+        @apply text-3xl font-semibold
+      }
+    }
+
+    // 아래는 컴포넌트 계층을 직접 재정의한 경우
+    // 유틸리티 클래스 조합을 다시 한 번 추상화해 btn 클래스로 재정의한 것
+    @layer components {
+      .btn {
+        @apply w-full bg-black h-10 text-white rounded-sexy-name mt-tomato;
+      }
+    }
 */
