@@ -17,7 +17,7 @@ export default function Home() {
         className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col gap-3"
       >
         {['Elian', 'Me', 'You', 'Yourself', ''].map((person, idx) => (
-          <div key={idx} className="flex items-center gap-5">
+          <div key={idx} className="flex items-center gap-5 group">
             <div className="size-10 bg-blue-400 rounded-full" />
             {isLoading ? (
               <>
@@ -26,7 +26,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <span className="text-lg font-medium empty:w-24 empty:h-5 empty:rounded-full empty:animate-pulse empty:bg-gray-300">
+                <span className="text-lg font-medium empty:w-24 empty:h-5 empty:rounded-full empty:animate-pulse empty:bg-gray-300 group-hover:text-red-500">
                   {person}
                 </span>
                 <div className="size-6 bg-red-500 text-white flex items-center justify-center rounded-full relative">
@@ -50,14 +50,32 @@ export default function Home() {
       >
         {isLoading ? 'Loading' : 'has loaded'}
       </button>
+      <div
+        ref={cardRef}
+        className="bg-white shadow-lg p-5 rounded-3xl w-full max-w-screen-sm flex flex-col gap-3"
+      >
+        <div className="group flex flex-col gap-2">
+          <input
+            className="bg-gray-100 w-full outline-none p-2 rounded-md"
+            placeholder="Write your email"
+            type="email"
+          />
+          <span className="group-focus-within:block hidden text-red-500">
+            Make sure it is a valid email...
+          </span>
+          <button className="bg-teal-500 text-white px-3 py-2 rounded-xl">Submit</button>
+        </div>
+      </div>
     </main>
   );
 }
 
 /*
-  1. tailwind css 반응형 수정자의 경우, 기본 가장 작은 사이즈부터 스타일을 적용하도록 설계돼 있다.
+1. tailwind css 반응형 수정자의 경우, 기본 가장 작은 사이즈부터 스타일을 적용하도록 설계돼 있다.
 
-    <main className="bg-gray-100 sm:bg-red-100" />{children}</main
+  <main className='bg-gray-100 sm:bg-red-100' />;
+{
+  children}</main
 
     위 코드에서 main 은 배경색이 회색100에서 가로 640px이 되는 순간 빨강100으로 변경된 이후부터 계속 빨강 100이 유지된다.
     md, lg, xl과 같은 더 큰 사이즈가 적용됐을 때 추가 테일윈드 유틸리티 클래스 수정자가 여기서는 존재하지 않기 때문이다.
@@ -112,5 +130,13 @@ export default function Home() {
       empty:w-24 empty:h-5 empty:rounded-full empty:animate-pulse empty:bg-gray-300
 
       자식으로 배치되어야 할 배열 정보가 빈 문자열 처럼 비어 있다고 판명된 경우, 지정된 스타일 적용
+
+    7. group - group-[className]:
+
+      부모 - group
+      자식 - group-hover:text-red-500 group-focus-within:block hidden
+
+      이 관계는 group 클래스가 속한 부모와 그 자식 요소들에 적용된다.
+      * group-focus-within:block - 해당 요소가 안쪽으로 포커싱 돼 있을 때 요소를 보여준다는 의미
 
 */
