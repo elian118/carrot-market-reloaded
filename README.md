@@ -395,7 +395,7 @@ ___
    ```
    
 2. [validator](https://www.npmjs.com/package/validator) - 패턴 유효성 검사 모듈<br/><br/>
-    validator는 전화번호, 신용카드 번호 등 인풋의 문자열 입력값의 패턴을 간편 검사하는 모듈이다.<br/>
+    validator는 전화번호, 신용카드 번호 등 인풋의 문자열 입력값의 정규식 패턴을 간편 검사하는 모듈이다.<br/>
     타입스크립트 지원이 안 되는 모듈이므로, [@types/validator](https://www.npmjs.com/package/@types/validator) 도 함께 설치한다.
     ```javascript
     'use server';
