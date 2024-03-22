@@ -1,6 +1,7 @@
 'use client';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
 
 export function ThemeToggle() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -13,13 +14,13 @@ export function ThemeToggle() {
 
   return (
     isMounted && (
-      <div className="absolute top-0 right-0 z-10">
-        <div className="flex gap-2 *:p-2">
+      <div className="absolute top-4 right-4 z-10">
+        <div className="flex gap-2 *:rounded-full *:size-6">
           <button
-            className="bg-teal-500 dark:bg-gray-100 dark:text-gray-900 rounded-md"
+            className="text-gray-900 dark:text-white rounded-md"
             onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
           >
-            {currentTheme === 'dark' ? 'Light' : 'Dark'}
+            {currentTheme === 'dark' ? <MoonIcon /> : <SunIcon />}
           </button>
         </div>
       </div>

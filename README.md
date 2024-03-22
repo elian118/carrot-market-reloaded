@@ -242,7 +242,7 @@ ___
       );
     }
     ```
-2. 스타일 정보 없음 경고
+2. 서버에서 제공한 HTML 확장 속성 경고
 
     ```
     Warning: Extra attributes from the server: class,style,data-inboxsdk-session-id
@@ -250,11 +250,38 @@ ___
     ...
     ```
 
-    개발자 도구 요소에서 body 태그 style 정보가 없어 발생
+    개발자 도구 요소탭에서 html 요소 안에<br/>`data-inboxsdk-session-id` 확장 속성이 발생했기 때문<br/><br/>
 
-   ```html
-   <body style class='__className_aaf875 bg-gray-100 dark:bg-gray-800 max-w-screen-sm...'>
-    ...       
-   </body>
-   ```
-   딱히 해결책은 없어 보인다. 경고니 무시하자.
+    클라이언트 사이드에서는 이 속성을 잠재적 위험요소로 판단해 콘솔에서 오류로 처리한 듯하다.<br/>
+    난수가 입력되는 형태라, 페이지 새로고침마다 값 변경됨 확인
+    ```html
+    <html 
+      lang="en" 
+      class="dark" 
+      style="color-scheme: dark;" 
+      data-inboxsdk-session-id="17110608313164-0.2014529195148978" // 확장 속성
+   >
+     ...       
+    </html>
+    ```
+    딱히 치명적 오류가 발생하거나 해결책 또한 없어 보인다. 경고니 무시하자.<br/><br/>
+3. 전역 컴포넌트 스타일 적용<br/><br/>
+    UI 컴포넌트를 일일이 다 만들어 각각 스타일을 지정해 사용하는 방법도 있지만,<br/> 
+    프로젝트 전역에서 사용할 스타일이라면, global.css를 직접 건드는 방식도 괜찮다.<br/><br/>
+    아래는 primary-btn 클래스 스타일을 컴포넌트 계층에 추가한 것이다.<br/>
+    컴포넌트 레이어 계층에서 오버라이드된 클래스는, 테일윈드 인텔리센스에서 감지할 수 없다.
+    ```javascript
+    // global.css
+    @layer components {
+        .primary-btn {
+            @apply w-full bg-orange-500 text-white font-medium rounded-md text-center hover:bg-orange-400 transition-colors;
+        }
+    }
+    ```
+4. [heroicons](https://heroicons.com/) - 무료 테일윈드 아이콘<br/><br/>
+    테일윈드 팀에서 만든 무료 아이콘 모듈로, 테일윈드 클래스 오버라이드가 가능하다.
+    설치는 아래와 같이 해주면 된다.
+    ```
+    yarn add @heroicons/react
+    ```
+    
