@@ -278,10 +278,22 @@ ___
         }
     }
     ```
-4. [heroicons](https://heroicons.com/) - 무료 테일윈드 아이콘<br/><br/>
-    테일윈드 팀에서 만든 무료 아이콘 모듈로, 테일윈드 클래스 오버라이드가 가능하다.
-    설치는 아래와 같이 해주면 된다.
-    ```
-    yarn add @heroicons/react
-    ```
+4. 무료 아이콘<br/>
+    - [heroicons](https://heroicons.com/)<br/>
+        테일윈드 팀에서 만든 무료 아이콘 모듈로, 테일윈드 클래스 오버라이드가 가능하다.<br/>
+        설치는 아래와 같이 해주면 된다.
+        ```
+        yarn add @heroicons/react
+        ```
+    - [SVGrepo](https://www.svgrepo.com/)<br/>
+        SVG 파일을 공유하는 저장소 사이트<br/>
+        리액트 안에서 편리하게 쓰려면, [SVGR](https://react-svgr.com/)과 같은 라이브러리의 도움이 필요하다.
+        
+   
+5. [SVGR](https://react-svgr.com/) - SVG 파일 to 리액트 컴포넌트 라이브러리<br/><br/>
+    SVGR은 'Transform SVGs into React components' 의 줄임말이다.<br/><br/>
+    이런 라이브러리가 있기 전에는 SVG 파일을 리액트에서 쓰려면<br/> 
+    리액트 컴포넌트로 SVG 코드를 랩핑한 별도 아이콘 컴포넌트를 만들어 끌어다 써야 했다.<br/>
+    SVGR은 이 과정을 개발자 대신 해준다.<br/><br/>
+    설치 및 사용은 공식 사이트 getting Started 코너에서 next.js 안내를 확인해 그대로 따라하면 된다.
     
