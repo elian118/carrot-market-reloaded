@@ -317,11 +317,21 @@ ___
             })
             .min(3, INVALID.TOO_SHORT)
             .max(10, INVALID.TOO_LONG)
+            .toLowerCase()
+            .trim()
             // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
-            .regex(hasSlang(), '이름에 비속어가 포함돼 있습니다.'),
-         email: z.string().email(INVALID.EMAIL),
-         password: z.string().min(10, INVALID.TOO_SHORT),
-         confirm_password: z.string().min(10, INVALID.TOO_SHORT),
+            .regex(hasSlang(), '이름에 비속어가 포함돼 있습니다.')
+            .transform((username) => `🔥 ${username} 🔥`),
+         email: z.string().email(INVALID.EMAIL).trim().toLowerCase(),
+         password: z
+           .string()
+           .min(10, INVALID.TOO_SHORT)
+           .trim()
+           .regex(
+              pwRegex,
+              '비밀번호는 대﹒소문자, 하나 이상의 숫자, 특수문자를 포함해야 합니다.',
+           ),
+         confirm_password: z.string().min(10, INVALID.TOO_SHORT).trim(),
       })
       // 객체 전체에 한 번에 적용하는 유효성 검사 => fieldErrors가 아닌, formErrors 로 오류 메시지 전달
       .refine(({ password, confirm_password }) => isValidPw({ password, confirm_password }), {
