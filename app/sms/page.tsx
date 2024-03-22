@@ -9,9 +9,9 @@ const SMSLogin = () => {
         <h2 className="text-xl">전화번호 인증을 진행해주세요.</h2>
       </div>
       <form className="flex flex-col gap-3">
-        <FormInput type="number" placeholder="전화번호" required />
-        <FormInput type="number" placeholder="인증번호" required />
-        <FormBtn loading={false} text="인증하기" />
+        <FormInput name="phoneNum" type="number" placeholder="전화번호" required />
+        <FormInput name="verifyNum" type="number" placeholder="인증번호" required />
+        <FormBtn text="인증하기" />
       </form>
     </div>
   );

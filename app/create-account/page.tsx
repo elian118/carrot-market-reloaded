@@ -10,11 +10,16 @@ const CreateAccount = () => {
         <h2 className="text-xl">가입을 위해 아래 양식을 채워주세요!</h2>
       </div>
       <form className="flex flex-col gap-3">
-        <FormInput type="text" placeholder="이름" required />
-        <FormInput type="email" placeholder="이메일" required />
-        <FormInput type="password" placeholder="비밀번호" required />
-        <FormInput type="password" placeholder="비밀번호 확인" required />
-        <FormBtn loading={false} text="계정 생성" />
+        <FormInput name="name" type="text" placeholder="이름" required />
+        <FormInput name="email" type="email" placeholder="이메일" required />
+        <FormInput name="password" type="password" placeholder="비밀번호" required />
+        <FormInput
+          name="confirmPW"
+          type="password"
+          placeholder="비밀번호 확인"
+          required
+        />
+        <FormBtn text="계정 생성" />
       </form>
       <SocialLogin />
     </div>
