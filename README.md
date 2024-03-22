@@ -204,7 +204,7 @@ ___
 ___
 
 1. 하이드레이션 경고
-    ```
+    ```shell
     Error: Text content does not match server-rendered HTML.
     Warning: Text content did not match. Server: "Dark" Client: "Light"
     See more info here: https://nextjs.org/docs/messages/react-hydration-error
@@ -405,4 +405,63 @@ ___
     
     const phoneSchema = z.string().trim().refine(validator.isMobilePhone);
     ...
+    ```
+
+## #7. Prisma
+___
+
+1. 개념<br/>
+    [프리즈마](https://www.prisma.io/)는 대중적인 노드 기반 ORM 중 하나다.<br/>
+    프리즈마 설치 전에 기본적인 DB 개발 환경은 갖춰두도록 하자. 설치 명령은 아래와 같다.
+    ```shell
+    yarn add prisma
+    ```
+    설치 후 프로젝트에 프리즈마 적용을 위해 아래 명령을 실행한다.<br/>
+    그러면, 루트에 prisma 폴더와 함께 그 아래 `schema.prisma` 파일이 새로 생성된다.<br/>
+    덤으로 데이터베이스 스키마 정보 연동을 위한 환경변수 설정에 필요한 `.env` 파일도 알아서 생성해준다.<br/>
+    ```shell
+    npx prisma init
+    ```
+    이후 뜨는 설명대로 차근차근 하면 된다.
+    ```shell
+    ✔ Your Prisma schema was created at prisma/schema.prisma
+    You can now open it in your favorite editor.
+
+    warn You already have a .gitignore file. Don't forget to add `.env` in it to not commit any private information.
+
+    Next steps:
+    1. Set the DATABASE_URL in the .env file to point to your existing database. If your database has no tables yet, read https://pris.ly/d/getting-started
+    2. Set the provider of the datasource block in schema.prisma to match your database: postgresql, mysql, sqlite, sqlserver, mongodb or cockroachdb.
+    3. Run prisma db pull to turn your database schema into a Prisma schema.
+    4. Run prisma generate to generate the Prisma Client. You can then start querying your database.
+
+    More information in our documentation:
+    https://pris.ly/d/getting-started
+    ```
+    
+    순서대로 하려면 먼저 .env 파일을 확인하고 데이터베이스 정보를 입력해준다.<br/>
+    데이터베이스 정보(DATABASE_URL)는 개발자가 선택한 데이터베이스 유형마다 다른 패턴을 가지므로<br/>
+    프리즈마 공식 사이트에서 정확히 확인하고 기재해야 한다.<br/><br/>
+   
+    * 초기 .env 파일을 보면, 데이터베이스별 프리즈마 연동법을 설명한 [상세 페이지](https://pris.ly/d/connection-strings)가 기재돼 있으니 확인
+    * 데이터베이스 정보는 노출해서는 안 되는 개인정보이므로, .gitignore 파일에 `.env` 추가 필수
+    ```dotenv
+    # Environment variables declared in this file are automatically made available to Prisma.
+    # See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+    
+    # Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+    # See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+    
+    DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public" // 변경
+    ```
+    `schema.prisma` 파일에서 선택한 데이터베이스를 제공자(provider)로 변경
+    ```javascript
+    generator client {
+        provider = "prisma-client-js"
+    }
+    
+    datasource db {
+        provider = "postgresql" // 변경
+        url      = env("DATABASE_URL")
+    }
     ```
