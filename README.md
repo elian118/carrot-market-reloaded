@@ -465,3 +465,38 @@ ___
         url      = env("DATABASE_URL")
     }
     ```
+    데이터베이스가 연결이 돼 있는 상태라면 터미널에서 아래 명령을 입력한다.<br/><br/>
+    `.env` 파일에 환경변수로 입력된 DATABASE_URL과<br/>
+    `schema.prisma` 파일에 입력된 스키마 모델을 토대로 새로운 데이터베이스를 만들어주는 명령이다 
+    ```shell
+    npx prisma migrate dev
+    ```
+    그러면 아래와 같은 질문이 뜨는데, 아래와 같이 모델과 관련성 있는 이름을 짓고 엔터를 누른다.
+    ```shell
+    ? Enter a name for the new migration: add_user
+    ```
+    이후 prisma 폴더 아래 migrations 폴더가 새로 생성된 걸 확인할 수 있다.<br/>
+    이 시점에서 데이터베이스가 새로 생성된 것도 확인 가능한데,<br/>
+    약간의 시간차가 발생할 수 있으니, 새로고침을 계속 눌러준다.<br/><br/>
+    또, 이때 프리즈마에서 아래 위치에<br/>
+    방금 만든 스키마를 위한 JS 파일과 타입까지 새로 생성했다는 사실도 확인할 수 있다.<br/><br/>
+    
+    - `node_modules/prisma/client`,<br/>
+    - `node_modules/@prisma/@client`<br/><br/>
+    이 코드들 또한 개발에 활용 가능하므로 다음과 같이 import 해서 쓰면 된다.<br/>
+    ```javascript
+    import { PrismaClient } from '@prisma/client';
+   
+    const db = new PrismaClient();
+   
+    const test = async () => {
+      const user = await db.user.create({
+        data: {
+          username: 'test', // @unique 속성이라, 두 번째 실행부터 정상적으로 오류 발생
+        },
+      });
+    }
+    console.log(user);
+   
+    test();
+    ```

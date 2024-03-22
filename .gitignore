@@ -38,3 +38,7 @@ next-env.d.ts
 
 # zetbrain
 .idea
+
+# prisma db
+*.db
+*.db-journal
