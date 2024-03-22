@@ -11,6 +11,7 @@ const formSchema = z
         required_error: `이름을 ${INVALID.INPUT}`,
       })
       .min(3, INVALID.TOO_SHORT)
+      .max(10, INVALID.TOO_LONG)
       .toLowerCase()
       .trim()
       // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
@@ -18,13 +19,13 @@ const formSchema = z
     email: z.string().email(INVALID.EMAIL).trim().toLowerCase(),
     password: z
       .string()
-      .min(10, INVALID.TOO_SHORT)
+      .min(4, INVALID.TOO_SHORT)
       .trim()
       .regex(
         pwRegex,
         '비밀번호는 대﹒소문자, 하나 이상의 숫자, 특수문자를 포함해야 합니다.',
       ),
-    confirm_password: z.string().min(10, INVALID.TOO_SHORT).trim(),
+    confirm_password: z.string().min(4, INVALID.TOO_SHORT).trim(),
   })
   .refine(({ password, confirm_password }) => isValidPw({ password, confirm_password }), {
     message: '입력된 비밀번호가 서로 다릅니다.',
