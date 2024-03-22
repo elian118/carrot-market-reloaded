@@ -308,6 +308,9 @@ ___
     - 폼 스키마 생성
 
     ```javascript
+    'use server';
+    ...
+   
     const formSchema = z
       .object({
          username: z
@@ -343,6 +346,9 @@ ___
     ```
    - 폼 스키마 파싱 - 유효성 검사 수행
     ```javascript
+    'use server';
+    ...
+   
     export const createAccount = (prevState: any, formData: FormData) => {
       const data = {
         username: formData.get('username'),
@@ -364,10 +370,39 @@ ___
    - 폼 상태 참조 - 컴포넌트 계층
     ```javascript
     'use client';
+    ...
+   
     import { useFormState } from 'react-dom';
     import { createAccount } from '@/app/create-account/actions';
     ...
    
     const [state, dispatch] = useFormState(createAccount, null);
+    ...
+    ```
+   - coerce - 숫자타입 입력값 검사<br/><br/>
+     인풋은 입력 값을 무엇으로 받든 모두 string으로 전달<br/>
+     따라서, 인풋의 number 타입 입력 값은 정확한 검사를 위해 coerce를 거쳐야 한다.
+   ```javascript
+    'use server';
+
+    import { z } from 'zod';
+    
+    const tokenSchema = z.coerce.number().min(100000).max(999999);
+    
+    export const smsLogin = async (prevState: any, formData: FormData) => {
+        console.log(typeof tokenSchema.parse(formData.get('token'))); // number
+    };
+   ```
+   
+2. [validator](https://www.npmjs.com/package/validator) - 패턴 유효성 검사 모듈<br/><br/>
+    validator는 전화번호, 신용카드 번호 등 인풋의 문자열 입력값의 패턴을 간편 검사하는 모듈이다.<br/>
+    타입스크립트 지원이 안 되는 모듈이므로, [@types/validator](https://www.npmjs.com/package/@types/validator) 도 함께 설치한다.
+    ```javascript
+    'use server';
+
+    import { z } from 'zod';
+    import validator from 'validator';
+    
+    const phoneSchema = z.string().trim().refine(validator.isMobilePhone);
     ...
     ```
