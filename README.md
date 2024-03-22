@@ -1,5 +1,5 @@
 # Carrot Market Reloaded
-___
+
 ## #3. Tailwind css
 ___
 
@@ -199,7 +199,7 @@ ___
     
     플러그인 적용 시 미리 npm 설치 후 서버를 재식작해야 함에 주의!
 
-___
+
 ## #4. Authentication UI
 ___
 
@@ -296,4 +296,38 @@ ___
     리액트 컴포넌트로 SVG 코드를 랩핑한 별도 아이콘 컴포넌트를 만들어 끌어다 써야 했다.<br/>
     SVGR은 이 과정을 개발자 대신 해준다.<br/><br/>
     설치 및 사용은 공식 사이트 getting Started 코너에서 next.js 안내를 확인해 그대로 따라하면 된다.
-    
+
+
+## #6. Validation
+___
+
+1. [Zod](https://zod.dev/) - 간편 유효성 검사 모듈<br/><br/>
+
+    form 요소와 함께 사용할 때 유효성 검사 도구로 많이 사용됨<br/><br/>
+
+    - 예제<br/>
+
+   ```javascript
+   const formSchema = z
+      .object({
+         username: z
+            .string({
+               invalid_type_error: `이름은 ${INVALID.STRING}`,
+               required_error: `이름을 ${INVALID.INPUT}`,
+            })
+            .min(3, INVALID.TOO_SHORT)
+            .max(10, INVALID.TOO_LONG)
+            // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
+            .regex(hasSlang(), '이름에 비속어가 포함돼 있습니다.'),
+         email: z.string().email(INVALID.EMAIL),
+         password: z.string().min(10, INVALID.TOO_SHORT),
+         confirm_password: z.string().min(10, INVALID.TOO_SHORT),
+      })
+      // 객체 전체에 한 번에 적용하는 유효성 검사 => fieldErrors가 아닌, formErrors 로 오류 메시지 전달
+      .refine(({ password, confirm_password }) => isValidPw({ password, confirm_password }), {
+         // 단, 기존 fieldErrors 중 하나에 메시지를 표시하도록 하려면
+         // 두번째 인자를 string 대신 아래와 같이 객체정보로 변경
+         message: '입력된 비밀번호가 서로 다릅니다.',
+         path: ['confirm_password'],
+      });
+   ```

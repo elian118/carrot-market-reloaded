@@ -6,7 +6,13 @@ type FormInputProps = {
   errors?: string[];
 };
 
-const FormInput = ({ name, type, placeholder, required, errors }: FormInputProps) => {
+const FormInput = ({
+  name,
+  type,
+  placeholder,
+  required,
+  errors = [],
+}: FormInputProps) => {
   return (
     <div className="flex flex-col gap-2">
       <input
