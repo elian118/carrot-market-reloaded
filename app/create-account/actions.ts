@@ -15,7 +15,8 @@ const formSchema = z
       .toLowerCase()
       .trim()
       // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
-      .regex(hasSlang, '이름에 비속어가 포함돼 있습니다.'),
+      .regex(hasSlang, '비속어는 허용되지 않습니다.')
+      .transform((username) => username.replaceAll('-', '')),
     email: z.string().email(INVALID.EMAIL).trim().toLowerCase(),
     password: z
       .string()

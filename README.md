@@ -305,10 +305,10 @@ ___
 
     form 요소와 함께 사용할 때 유효성 검사 도구로 많이 사용됨<br/><br/>
 
-    - 예제<br/>
+    - 폼 스키마 생성
 
-   ```javascript
-   const formSchema = z
+    ```javascript
+    const formSchema = z
       .object({
          username: z
             .string({
@@ -340,4 +340,34 @@ ___
          message: '입력된 비밀번호가 서로 다릅니다.',
          path: ['confirm_password'],
       });
-   ```
+    ```
+   - 폼 스키마 파싱 - 유효성 검사 수행
+    ```javascript
+    export const createAccount = (prevState: any, formData: FormData) => {
+      const data = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        confirm_password: formData.get('confirm_password'),
+      };
+      
+      // formSchema.parse(data) 적용 시 try-catch 필수
+      const result = formSchema.safeParse(data);
+    
+      if (!result.success) {
+        return result.error.flatten();
+      } else {
+        console.log(result.data);
+      }
+    };
+    ```
+   - 폼 상태 참조 - 컴포넌트 계층
+    ```javascript
+    'use client';
+    import { useFormState } from 'react-dom';
+    import { createAccount } from '@/app/create-account/actions';
+    ...
+   
+    const [state, dispatch] = useFormState(createAccount, null);
+    ...
+    ```
