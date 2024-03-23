@@ -540,4 +540,36 @@ ___
     웹팩에서 특정 모듈을 처리할 수 없다는 오류가 발생할 수 있다.<br/><br/>
     의존성을 추가할 때 종종 발생하는 흔한 peer dependency 오류다.<br/>
     이럴 때는 `node_modules`, `yarn.lock`, `package.lock.json`을 삭제하고<br/>
-    `yarn install`을 다시 실행해 재설치해야 한다.
+    `yarn install`을 다시 실행해 재설치해야 한다.<br/><br/>
+
+2. 로그인 정보 저장<br/><br/>
+
+    사용자 정보는 세션, 로컬, 쿠키 등 클라이언트 사이드에 저장해둠으로서 로그인 상태를 유지한다.<br/>
+    단, 쉽게 사용자정보를 알 수 없도록 JWT을 대신 보내는 식으로 암호화해야 하는데,<br/>
+    여기서는 이걸 대신해주는 모듈로 [iron-session](https://www.npmjs.com/package/iron-session)을 사용한다.
+    ```shell
+    yarn add iron-session
+    ```
+   [iron-session](https://www.npmjs.com/package/iron-session)은 자바스크립트 전용 보안, 비상태, 쿠키 기반의 세션 라이브러리로서,<br/>
+    이를 통해 암호화된 쿠키로 저장된 세션 데이터는 서버 사이드에서 디코딩된다.<br/>
+    디코딩에는 쿠키 저장에 사용된 암호를 다시 사용하므로, 주로 `.env` 파일에 지정된 서버 환경변수를 사용한다.
+    <br/><br/>
+
+    아래는 `iron-session`으로 사용자 정보`({ id: #조회된번호 })`를 가져와 암호화해서<br/>
+    쿠키에 `delicious-carrot` 이름으로 값을 저장하는 과정이다.<br/><br/>
+    * 환경변수 `COOKIE_PASSWORD`는 50자 이상의 긴 문자열 권장 - 구글에서 '암호 생성기' 검색해 만들기
+
+    ```javascript
+    import { getIronSession } from 'iron-session';
+    import { cookies } from 'next/headers';
+    ...
+    
+    const cookie = await getIronSession(cookies(), {
+      cookieName: 'delicious-carrot',
+      password: process.env.COOKIE_PASSWORD!, // 서버 환경변수를 암호로 사용
+    });
+    
+    // @ts-ignore
+    cookie.id = user.id;
+    await cookie.save();
+    ```

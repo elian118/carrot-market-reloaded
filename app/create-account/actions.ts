@@ -10,6 +10,9 @@ import {
 } from '@/libs/constants';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
+import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const checkUniqueUsername = async (username: string) => {
   const user = await db.user.findUnique({
@@ -84,8 +87,15 @@ export const createAccount = async (prevState: any, formData: FormData) => {
       },
       select: { id: true },
     });
-    console.log(user);
     // 로그인
-    // redirect '/home'
+    const cookie = await getIronSession(cookies(), {
+      cookieName: 'delicious-carrot',
+      password: process.env.COOKIE_PASSWORD!,
+    });
+    // @ts-ignore
+    cookie.id = user.id;
+    await cookie.save();
+
+    redirect('/profile');
   }
 };
