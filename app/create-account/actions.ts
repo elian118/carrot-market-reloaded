@@ -13,22 +13,6 @@ import bcrypt from 'bcrypt';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/libs/session';
 
-const checkUniqueUsername = async (username: string) => {
-  const user = await db.user.findUnique({
-    where: { username },
-    select: { id: true },
-  });
-  return !Boolean(user);
-};
-
-const checkUniqueEmail = async (email: string) => {
-  const user = await db.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  return !Boolean(user);
-};
-
 const formSchema = z
   .object({
     username: z
@@ -42,20 +26,42 @@ const formSchema = z
       .toLowerCase()
       // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
       .regex(hasSlang, '비속어는 허용되지 않습니다.')
-      .refine(checkUniqueUsername, '이미 사용중인 이름입니다.')
       .transform((username) => username.replaceAll('-', '')),
-    email: z
-      .string()
-      .email(INVALID.EMAIL)
-      .trim()
-      .toLowerCase()
-      .refine(checkUniqueEmail, '해당 이메일로 가입된 회원이 이미 존재합니다.'),
+    email: z.string().email(INVALID.EMAIL).trim().toLowerCase(),
     password: z
       .string()
       .trim()
       .min(PASSWORD_MIN_LENGTH, INVALID.TOO_SHORT)
       .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
     confirm_password: z.string().min(PASSWORD_MIN_LENGTH, INVALID.TOO_SHORT).trim(),
+  })
+  .superRefine(async (data, ctx) => {
+    const user = await db.user.findUnique({
+      where: { username: data.username },
+      select: { id: true },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '이미 사용중인 이름입니다.',
+        path: ['username'],
+        fatal: true, // 이슈 발생 시 다음 유효성 검사 실행 안 함
+      });
+    }
+  })
+  .superRefine(async (data, ctx) => {
+    const user = await db.user.findUnique({
+      where: { email: data.email },
+      select: { id: true },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '해당 이메일로 가입된 회원이 이미 존재합니다.',
+        path: ['email'],
+        fatal: true, // 이슈 발생 시 다음 유효성 검사 실행 안 함
+      });
+    }
   })
   .refine(({ password, confirm_password }) => isValidPw({ password, confirm_password }), {
     message: '입력된 비밀번호가 서로 다릅니다.',
