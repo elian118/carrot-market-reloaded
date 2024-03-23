@@ -71,7 +71,7 @@ export const createAccount = async (prevState: any, formData: FormData) => {
     confirm_password: formData.get('confirm_password'),
   };
 
-  const result = await formSchema.safeParseAsync(data);
+  const result = await formSchema.spa(data); // spa Alias of safeParseAsync
 
   if (!result.success) {
     return result.error.flatten();
