@@ -23,7 +23,7 @@ export const smsLogIn = async (prevState: ActionState, formData: FormData) => {
 
   if (!prevState.token) {
     return {
-      token: prevState.token || phoneValid.success,
+      token: phoneValid.success,
       error: !phoneValid.success ? phoneValid.error.flatten() : undefined,
     };
   } else {
