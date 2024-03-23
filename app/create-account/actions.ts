@@ -1,18 +1,17 @@
 'use server';
 
 import { z } from 'zod';
-import { INVALID } from '@/libs/constants';
-import { hasSlang, isValidPw } from '@/app/create-account/utils';
 import {
+  INVALID,
   PASSWORD_MIN_LENGTH,
   PASSWORD_REGEX,
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
+import { hasSlang, isValidPw } from '@/app/create-account/utils';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
-import { getIronSession } from 'iron-session';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getSession } from '@/libs/session';
 
 const checkUniqueUsername = async (username: string) => {
   const user = await db.user.findUnique({
@@ -78,6 +77,7 @@ export const createAccount = async (prevState: any, formData: FormData) => {
   } else {
     // 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(result.data.password, 12);
+
     // 데이터베이스에 사용자 정보 저장
     const user = await db.user.create({
       data: {
@@ -87,15 +87,11 @@ export const createAccount = async (prevState: any, formData: FormData) => {
       },
       select: { id: true },
     });
-    // 로그인
-    const cookie = await getIronSession(cookies(), {
-      cookieName: 'delicious-carrot',
-      password: process.env.COOKIE_PASSWORD!,
-    });
-    // @ts-ignore
-    cookie.id = user.id;
-    await cookie.save();
 
+    // 로그인
+    const session = await getSession();
+    session.id = user.id;
+    await session.save();
     redirect('/profile');
   }
 };

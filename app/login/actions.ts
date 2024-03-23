@@ -7,6 +7,18 @@ import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
+import db from '@/libs/db';
+import bcrypt from 'bcrypt';
+import { getSession } from '@/libs/session';
+import { redirect } from 'next/navigation';
+
+const checkEmailExists = async (email: string) => {
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  return Boolean(user);
+};
 
 const formSchema = z.object({
   email: z
@@ -16,7 +28,8 @@ const formSchema = z.object({
     })
     .trim()
     .email()
-    .toLowerCase(),
+    .toLowerCase()
+    .refine(checkEmailExists, '해당 이메일로 가입된 회원이 없습니다.'),
   password: z
     .string()
     .trim()
@@ -30,11 +43,31 @@ export const login = async (prevState: any, formData: FormData) => {
     password: formData.get('password'),
   };
 
-  const result = formSchema.safeParse(data);
+  const result = await formSchema.spa(data);
 
   if (!result.success) {
     return result.error.flatten();
   } else {
-    console.log(result.data);
+    // 사용자를 찾았다면 암호화된 비밀번호 검사
+    const user = await db.user.findUnique({
+      where: { email: result.data.email },
+      select: { id: true, password: true },
+    });
+    const ok = await bcrypt.compare(result.data.password, user!.password ?? 'xxxx');
+
+    if (ok) {
+      // 로그인
+      const session = await getSession();
+      session.id = user!.id;
+      await session.save();
+      redirect('profile');
+    } else {
+      return {
+        fieldErrors: {
+          password: ['비밀번호가 틀립니다.'],
+          email: [],
+        },
+      };
+    }
   }
 };
