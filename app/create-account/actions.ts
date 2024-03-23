@@ -8,6 +8,23 @@ import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
+import db from '@/libs/db';
+
+const checkUniqueUsername = async (username: string) => {
+  const user = await db.user.findUnique({
+    where: { username },
+    select: { id: true },
+  });
+  return !Boolean(user);
+};
+
+const checkUniqueEmail = async (email: string) => {
+  const user = await db.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  return !Boolean(user);
+};
 
 const formSchema = z
   .object({
@@ -22,8 +39,14 @@ const formSchema = z
       .toLowerCase()
       // 그 외 유효성 검사 규칙과 메시지 추가 - refine, regex
       .regex(hasSlang, '비속어는 허용되지 않습니다.')
+      .refine(checkUniqueUsername, '이미 사용중인 이름입니다.')
       .transform((username) => username.replaceAll('-', '')),
-    email: z.string().email(INVALID.EMAIL).trim().toLowerCase(),
+    email: z
+      .string()
+      .email(INVALID.EMAIL)
+      .trim()
+      .toLowerCase()
+      .refine(checkUniqueEmail, '해당 이메일로 가입된 회원이 이미 존재합니다.'),
     password: z
       .string()
       .trim()
@@ -36,7 +59,7 @@ const formSchema = z
     path: ['confirm_password'],
   });
 
-export const createAccount = (prevState: any, formData: FormData) => {
+export const createAccount = async (prevState: any, formData: FormData) => {
   const data = {
     username: formData.get('username'),
     email: formData.get('email'),
@@ -44,11 +67,15 @@ export const createAccount = (prevState: any, formData: FormData) => {
     confirm_password: formData.get('confirm_password'),
   };
 
-  const result = formSchema.safeParse(data);
+  const result = await formSchema.safeParseAsync(data);
 
   if (!result.success) {
+    console.log(result.error);
     return result.error.flatten();
   } else {
-    console.log(result.data);
+    // 비밀번호 암호화
+    // 데이터베이스에 사용자 정보 저장
+    // 로그인
+    // redirect '/home'
   }
 };
