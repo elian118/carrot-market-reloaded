@@ -522,3 +522,22 @@ ___
     ```shell
     npx prisma studio
     ```
+
+## #8. Authentication
+___
+1. 비밀번호 암호화<br/><br/>
+    
+    여기서는 [bcrypt](https://www.npmjs.com/package/bcrypt)를 사용한다.<br/>
+    타입스크립트 지원을 위해 [@types/bcrypt](https://www.npmjs.com/package/@types/bcrypt)도 함께 설치
+
+    ```shell
+    yarn add bcrypt
+    ```
+    ```shell
+    yarn add -D @types/bcrypt
+    ```
+    그러나, 설치 후 실제 bcrypt 관련 코드 실행 시<br/>
+    웹팩에서 특정 모듈을 처리할 수 없다는 오류가 발생할 수 있다.<br/><br/>
+    의존성을 추가할 때 종종 발생하는 흔한 peer dependency 오류다.<br/>
+    이럴 때는 `node_modules`, `yarn.lock`, `package.lock.json`을 삭제하고<br/>
+    `yarn install`을 다시 실행해 재설치해야 한다.

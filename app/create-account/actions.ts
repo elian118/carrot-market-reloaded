@@ -9,6 +9,7 @@ import {
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
 import db from '@/libs/db';
+import bcrypt from 'bcrypt';
 
 const checkUniqueUsername = async (username: string) => {
   const user = await db.user.findUnique({
@@ -70,11 +71,20 @@ export const createAccount = async (prevState: any, formData: FormData) => {
   const result = await formSchema.safeParseAsync(data);
 
   if (!result.success) {
-    console.log(result.error);
     return result.error.flatten();
   } else {
     // 비밀번호 암호화
+    const hashedPassword = await bcrypt.hash(result.data.password, 12);
     // 데이터베이스에 사용자 정보 저장
+    const user = await db.user.create({
+      data: {
+        username: result.data.username,
+        email: result.data.email,
+        password: hashedPassword,
+      },
+      select: { id: true },
+    });
+    console.log(user);
     // 로그인
     // redirect '/home'
   }
