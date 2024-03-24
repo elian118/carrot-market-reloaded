@@ -10,8 +10,7 @@ import {
 import { hasSlang, isValidPw } from '@/app/create-account/utils';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
-import { redirect } from 'next/navigation';
-import { getSession } from '@/libs/session';
+import { saveLoginSession } from '@/libs/session';
 
 const formSchema = z
   .object({
@@ -95,9 +94,6 @@ export const createAccount = async (prevState: any, formData: FormData) => {
     });
 
     // 로그인
-    const session = await getSession();
-    session.id = user.id;
-    await session.save(); // 정보 암호화 후 쿠키에 저장
-    redirect('/profile');
+    await saveLoginSession(user);
   }
 };

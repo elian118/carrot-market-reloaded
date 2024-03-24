@@ -9,8 +9,7 @@ import {
 } from '@/libs/constants';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
-import { getSession } from '@/libs/session';
-import { redirect } from 'next/navigation';
+import { saveLoginSession } from '@/libs/session';
 
 const checkEmailExists = async (email: string) => {
   const user = await db.user.findUnique({
@@ -56,11 +55,7 @@ export const login = async (prevState: any, formData: FormData) => {
     const ok = await bcrypt.compare(result.data.password, user!.password ?? 'xxxx');
 
     if (ok) {
-      // 로그인
-      const session = await getSession();
-      session.id = user!.id;
-      await session.save(); // 정보 암호화 후 쿠키에 저장
-      redirect('profile');
+      await saveLoginSession(user!); // 로그인
     } else {
       return {
         fieldErrors: {
