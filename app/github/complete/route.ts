@@ -10,8 +10,8 @@ import {
 
 export const GET = async (req: NextRequest) => {
   const access_token: string = await getAccessToken(req);
-  const result = await getUserProfile(req, access_token);
-  const { id, avatar_url, twitter_username, name, login } = result;
+  const profile = await getUserProfile(req, access_token);
+  const { id, avatar_url, twitter_username, name, login } = profile;
   const email = await getUserEmail(req, access_token);
 
   // 1. 기존 사용자일때
