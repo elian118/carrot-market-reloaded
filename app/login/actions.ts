@@ -59,7 +59,7 @@ export const login = async (prevState: any, formData: FormData) => {
       // 로그인
       const session = await getSession();
       session.id = user!.id;
-      await session.save();
+      await session.save(); // 정보 암호화 후 쿠키에 저장
       redirect('profile');
     } else {
       return {
