@@ -2,10 +2,7 @@ import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import db from '@/libs/db';
 import { notFound, redirect } from 'next/navigation';
-
-type SessionContent = {
-  id?: number;
-};
+import { SessionContent } from '@/libs/types';
 
 // 세션 가져오기 - 복호화 된 쿠키 반환
 export const getSession = () => {

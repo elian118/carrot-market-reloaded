@@ -1,32 +1,18 @@
 import { NextRequest } from 'next/server';
-import { notFound } from 'next/navigation';
 import db from '@/libs/db';
 import { saveLoginSession } from '@/libs/session';
+import {
+  getAccessToken,
+  getEmailId,
+  getUserEmail,
+  getUserProfile,
+} from '@/app/github/complete/utils';
 
 export const GET = async (req: NextRequest) => {
-  const code = req.nextUrl.searchParams.get('code');
-  if (!code) return notFound();
-
-  const baseUrl = 'https://github.com/login/oauth/access_token';
-  const accessTokenParams = new URLSearchParams({
-    client_id: process.env.GITHUB_CLIENT_ID!,
-    client_secret: process.env.GITHUB_CLIENT_SECRET!,
-    code,
-  });
-  const accessTokenUrl = `${baseUrl}?${accessTokenParams}`;
-  const accessTokenResponse = await fetch(accessTokenUrl, {
-    method: 'POST',
-    headers: { Accept: 'application/json' },
-  });
-  const { error, access_token } = await accessTokenResponse.json();
-
-  if (error) return new Response(null, { status: 400 });
-
-  const userProfileResponse = await fetch('https://api.github.com/user', {
-    headers: { Authorization: `Bearer ${access_token}` },
-    cache: 'no-cache',
-  });
-  const { id, avatar_url, login } = await userProfileResponse.json();
+  const access_token: string = await getAccessToken(req);
+  const result = await getUserProfile(req, access_token);
+  const { id, avatar_url, twitter_username, name, login } = result;
+  const email = await getUserEmail(req, access_token);
 
   // 1. 기존 사용자일때
   const user = await db.user.findUnique({
@@ -38,9 +24,10 @@ export const GET = async (req: NextRequest) => {
   // 2. 신규 사용자일때 - 깃허브 사용자로 자동가입 후 로그인
   const newUser = await db.user.create({
     data: {
-      username: login,
+      username: twitter_username ?? name ?? email ? getEmailId(email) : login,
       github_id: String(id),
       avatar: avatar_url,
+      email: email,
     },
     select: { id: true },
   });
