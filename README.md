@@ -574,87 +574,87 @@ ___
     await cookie.save();
     ```
    
-   3. 미들웨어<br/><br/>
+3. 미들웨어<br/><br/>
 
-       넥스트 [미들웨어](https://nextjs.org/docs/app/building-your-application/routing/middleware)는 사용자 요청과 서버 응답 사이 중개자를 담당한다.<br/>
-       간단히, 넥스트 프로젝트 루트에 `middleware.ts` 파일을 아래와 같이 생성하면 미들웨어가 적용된다.<br/><br/>
+    넥스트 [미들웨어](https://nextjs.org/docs/app/building-your-application/routing/middleware)는 사용자 요청과 서버 응답 사이 중개자를 담당한다.<br/>
+    간단히, 넥스트 프로젝트 루트에 `middleware.ts` 파일을 아래와 같이 생성하면 미들웨어가 적용된다.<br/><br/>
 
-       미들웨어 함수는 반드시 `middleware`라는 이름으로 만들거나 `export default` 되어야 하며,<br/>
-       굳이 `export default` 하지 않으면, `config` 객체를 `export`해 부가 옵션을 추가할 수도 있다.  
-       ```javascript
-       import { NextRequest } from 'next/server';
+    미들웨어 함수는 반드시 `middleware`라는 이름으로 만들거나 `export default` 되어야 하며,<br/>
+    굳이 `export default` 하지 않으면, `config` 객체를 `export`해 부가 옵션을 추가할 수도 있다.  
+    ```javascript
+    import { NextRequest } from 'next/server';
 
-       export const middleware = (req: NextRequest) => {
-         console.log(req.nextUrl.pathname);
-         console.log('안녕하세요. 저는 미들웨어입니다.');
-       };
+    export const middleware = (req: NextRequest) => {
+      console.log(req.nextUrl.pathname);
+      console.log('안녕하세요. 저는 미들웨어입니다.');
+    };
    
-       export const config = {
-         // 미들웨어 설정 추가
+    export const config = {
+      // 미들웨어 설정 추가
+    }
+    ```
+    이후 페이지를 새로고침하면 아래와 같이,<br/>
+    거의 모든 요청에 미들웨어가 개입하고 있음을 알 수 있다.
+    ```shell
+    /
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/css/app/layout.css
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/chunks/webpack.js
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/chunks/main-app.js
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/chunks/app-pages-internals.js
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/chunks/app/page.js
+    안녕하세요. 저는 미들웨어입니다.
+    /_next/static/chunks/app/layout.js
+    안녕하세요. 저는 미들웨어입니다.
+    ```
+    물론, 미들웨어를 활용하면 각 요청에 대한 응답방식까지 다양하게 변형할 수 있다.
+    ```javascript
+    export const middleware = async (req: NextRequest) => {
+      const session = await getSession();
+      const pathname = req.nextUrl.pathname;
+    
+      if (pathname == '/') {
+        const res = NextResponse.next();
+        res.cookies.set('middleware-cookie', '안녕');
+        return res;
+      }
+      if (pathname === '/profile') {
+       // 1. 페이지 리다이렉트 방식
+       return NextResponse.redirect(new URL('/', req.url));
+       // 2. 오류 메시지 응답 방식
+       // return Response.json({
+       //   error: '허용되지 않는 진입방식입니다. 로그인 해주세요.',
+       // });
        }
-       ```
-       이후 페이지를 새로고침하면 아래와 같이,<br/>
-       거의 모든 요청에 미들웨어가 개입하고 있음을 알 수 있다.
-       ```shell
-       /
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/css/app/layout.css
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/chunks/webpack.js
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/chunks/main-app.js
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/chunks/app-pages-internals.js
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/chunks/app/page.js
-       안녕하세요. 저는 미들웨어입니다.
-       /_next/static/chunks/app/layout.js
-       안녕하세요. 저는 미들웨어입니다.
-       ```
-       물론, 미들웨어를 활용하면 각 요청에 대한 응답방식까지 다양하게 변형할 수 있다.
-       ```javascript
-       export const middleware = async (req: NextRequest) => {
-         const session = await getSession();
-         const pathname = req.nextUrl.pathname;
+    };
+    ```
+    아래는 `middleware` 함수에서 분기를 타지 않고, `config`을 통해 미들웨어 적용 분기를 지정한 방식이다. 
+    ```javascript
+    import { NextRequest } from 'next/server';
     
-         if (pathname == '/') {
-           const res = NextResponse.next();
-           res.cookies.set('middleware-cookie', '안녕');
-           return res;
-         }
-         if (pathname === '/profile') {
-          // 1. 페이지 리다이렉트 방식
-          return NextResponse.redirect(new URL('/', req.url));
-          // 2. 오류 메시지 응답 방식
-          // return Response.json({
-          //   error: '허용되지 않는 진입방식입니다. 로그인 해주세요.',
-          // });
-          }
-       };
-       ```
-       아래는 `middleware` 함수에서 분기를 타지 않고, `config`을 통해 미들웨어 적용 분기를 지정한 방식이다. 
-       ```javascript
-       import { NextRequest } from 'next/server';
+    export const middleware = async (req: NextRequest) => {
+      console.log('안녕');
+    };
     
-       export const middleware = async (req: NextRequest) => {
-         console.log('안녕');
-       };
+    export const config = {
+      // api, _next/static, _next/image, favicon.ico 등을 제외한 모든 요청에 미들웨어 적용(정규식)  
+      matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    };
+    ```
+    같은 맥락에서, 미들웨어가 모든 요청에 개입하는 점을 활용하면<br/> 
+    라우팅 도중 사용자 정보를 확인하고<br/>
+    미인가 사용자의 허용되지 않은 페이지 진입을 간단하게 일괄 차단할 수 있다.<br/><br/>
+    단, 넥스트 미들웨어는 종단에서 실행되는 `Edge runtime`이다.<br/>
+   `Edge runtime`은 빠른 실행을 위해 경량화 버전의 Node.JS만 사용된다.<br/><br/>
+    따라서, 미들웨어에서는 프리즈마와 같은 무거운 모듈을 불러와 사용자 정보를 확인하는 등의 작업을 할 수 없다.<br/>
+    미들웨어에서 프리즈마 함수 실행 시 코드 상의 오류는 없더라도 결국 서버 오류가 발생하는 이유다<br/><br/>
+    프리즈마를 굳이 종단에서 작동시키려면 프리즈마 가속기나 드라이버 어뎁터를 사용하는 설정을 통해 가능하긴 하지만,<br/>
+    종단에서의 프리즈마 코드 직접 실행은 권장되지 않는다.<br/><br/>
+    이 프로젝트의 미들웨어는 `iron-session`을 통해 가져온 쿠키에 id 값이 존재하는지 여부로만 판단하며,<br/>
+    실제 해당 id와 매칭되는 사용자 존재여부는 직접 판단하지 않는다.<br/><br/>
     
-       export const config = {
-         // api, _next/static, _next/image, favicon.ico 등을 제외한 모든 요청에 미들웨어 적용(정규식)  
-         matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-       };
-       ```
-       같은 맥락에서, 미들웨어가 모든 요청에 개입하는 점을 활용하면<br/> 
-       라우팅 도중 사용자 정보를 확인하고<br/>
-       미인가 사용자의 허용되지 않은 페이지 진입을 간단하게 일괄 차단할 수 있다.<br/><br/>
-       단, 넥스트 미들웨어는 종단에서 실행되는 `Edge runtime`이다.<br/>
-      `Edge runtime`은 빠른 실행을 위해 경량화 버전의 Node.JS만 사용된다.<br/><br/>
-       따라서, 미들웨어에서는 프리즈마와 같은 무거운 모듈을 불러와 사용자 정보를 확인하는 등의 작업을 할 수 없다.<br/>
-       미들웨어에서 프리즈마 함수 실행 시 코드 상의 오류는 없더라도 결국 서버 오류가 발생하는 이유다<br/><br/>
-       프리즈마를 굳이 종단에서 작동시키려면 프리즈마 가속기나 드라이버 어뎁터를 사용하는 설정을 통해 가능하긴 하지만,<br/>
-       종단에서의 프리즈마 코드 직접 실행은 권장되지 않는다.<br/><br/>
-       이 프로젝트의 미들웨어는 `iron-session`을 통해 가져온 쿠키에 id 값이 존재하는지 여부로만 판단하며,<br/>
-       실제 해당 id와 매칭되는 사용자 존재여부는 직접 판단하지 않는다.<br/><br/>
-    
-       * 자세한 미들웨어 설정법은 [Next.JS 미들웨어 설정 메뉴얼](https://nextjs.org/docs/app/building-your-application/routing/middleware) 참고
+    * 자세한 미들웨어 설정법은 [Next.JS 미들웨어 설정 메뉴얼](https://nextjs.org/docs/app/building-your-application/routing/middleware) 참고
