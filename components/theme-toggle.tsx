@@ -15,12 +15,16 @@ export function ThemeToggle() {
   return (
     isMounted && (
       <div className="absolute top-4 right-4 z-10">
-        <div className="flex gap-2 *:rounded-full *:size-6">
+        <div className="flex flex-col gap-2 *:rounded-full *:size-6">
           <button
             className="text-gray-900 dark:text-white rounded-md"
             onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
           >
-            {currentTheme === 'dark' ? <MoonIcon /> : <SunIcon />}
+            {currentTheme === 'dark' ? (
+              <MoonIcon className="hover:text-orange-600" />
+            ) : (
+              <SunIcon className="hover:text-orange-600" />
+            )}
           </button>
         </div>
       </div>

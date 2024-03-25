@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: '무엇이든 사고 파세요!',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
