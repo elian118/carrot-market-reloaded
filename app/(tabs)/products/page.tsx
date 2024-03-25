@@ -1,6 +1,8 @@
 import { getUser, logout } from '@/libs/session';
+import { getProducts } from '@/app/(tabs)/products/features';
 
-const Profile = async () => {
+const Product = async () => {
+  await getProducts();
   const user = await getUser();
 
   return (
@@ -14,4 +16,4 @@ const Profile = async () => {
   );
 };
 
-export default Profile;
+export default Product;
