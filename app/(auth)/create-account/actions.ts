@@ -7,7 +7,7 @@ import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
-import { hasSlang, isValidPw } from '@/app/create-account/utils';
+import { hasSlang, isValidPw } from '@/app/(auth)/create-account/utils';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
 import { saveLoginSession } from '@/libs/session';

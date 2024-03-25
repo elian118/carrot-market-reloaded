@@ -3,10 +3,10 @@
 import Input from '@/components/input';
 import Button from '@/components/button';
 import { useFormState } from 'react-dom';
-import { smsLogIn } from '@/app/sms/actions';
-import { initFormValue, initialState } from '@/app/sms/constants';
+import { smsLogIn } from '@/app/(auth)/sms/actions';
+import { initFormValue, initialState } from '@/app/(auth)/sms/constants';
 import { useState } from 'react';
-import { FormState } from '@/app/sms/types';
+import { FormState } from '@/app/(auth)/sms/types';
 
 const SMSLogin = () => {
   const [state, dispatch] = useFormState(smsLogIn, initialState);

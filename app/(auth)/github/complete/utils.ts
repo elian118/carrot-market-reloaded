@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { notFound } from 'next/navigation';
-import { GitHubEmail } from '@/app/github/complete/types';
+import { GitHubEmail } from '@/app/(auth)/github/complete/types';
 
 export const getAccessToken = async (req: NextRequest) => {
   const baseUrl = 'https://github.com/login/oauth/access_token';

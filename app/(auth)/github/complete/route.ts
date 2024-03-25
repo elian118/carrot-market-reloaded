@@ -6,7 +6,7 @@ import {
   getEmailId,
   getUserEmail,
   getUserProfile,
-} from '@/app/github/complete/utils';
+} from '@/app/(auth)/github/complete/utils';
 
 export const GET = async (req: NextRequest) => {
   const access_token: string = await getAccessToken(req);

@@ -5,7 +5,8 @@ const Profile = async () => {
 
   return (
     <div>
-      <h1>어서 오세요 {user?.username}님! 여기는 제품 페이지입니다.</h1>
+      <h1 className="text-xl">어서 오세요 {user?.username}님!</h1>
+      <h1 className="text-4xl">여기는 제품 페이지입니다.</h1>
       <form action={logout}>
         <button>Log out</button>
       </form>

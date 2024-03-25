@@ -7,8 +7,11 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: '당근 마켓',
-  description: '당근 마켓에 어서오세요!',
+  title: {
+    template: '%s | 당근 마켓',
+    default: '당근 마켓',
+  },
+  description: '무엇이든 사고 파세요!',
 };
 
 export default function RootLayout({

@@ -2,10 +2,10 @@
 
 import { z } from 'zod';
 import validator from 'validator';
-import { ActionState } from '@/app/sms/types';
+import { ActionState } from '@/app/(auth)/sms/types';
 import db from '@/libs/db';
 import { saveLoginSession } from '@/libs/session';
-import { createToken, doesTokenExists, getToken } from '@/app/sms/utils';
+import { createToken, doesTokenExists, getToken } from '@/app/(auth)/sms/utils';
 
 const phoneSchema = z
   .string()
