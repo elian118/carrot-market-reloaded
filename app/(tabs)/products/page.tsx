@@ -1,19 +1,19 @@
-import { getUser, logout } from '@/libs/session';
 import { getProducts } from '@/app/(tabs)/products/features';
+import ProductList from '@/components/product-list';
+import NoProduct from '@/components/no-product';
 
-const Product = async () => {
-  await getProducts();
-  const user = await getUser();
+const Products = async () => {
+  const products = await getProducts();
 
   return (
-    <div>
-      <h1 className="text-xl">어서 오세요 {user?.username}님!</h1>
-      <h1 className="text-4xl">여기는 제품 페이지입니다.</h1>
-      <form action={logout}>
-        <button>Log out</button>
-      </form>
+    <div className="p-5 flex flex-col gap-5">
+      {products.length > 0 ? (
+        products.map((product) => <ProductList key={product.id} {...product} />)
+      ) : (
+        <NoProduct />
+      )}
     </div>
   );
 };
 
-export default Product;
+export default Products;

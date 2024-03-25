@@ -1,5 +1,14 @@
+import db from '@/libs/db';
+
 export const getProducts = async () => {
-  await new Promise((res) => {
-    setTimeout(res, 5000);
+  return db.product.findMany({
+    select: {
+      title: true,
+      price: true,
+      created_at: true,
+      photo: true,
+      description: true,
+      id: true,
+    },
   });
 };
