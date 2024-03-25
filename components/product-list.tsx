@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCurrencyFormat } from '@/libs/utils';
+import { formatToTimeAgo, formatToWon } from '@/libs/utils';
 
 type ProductListProps = {
   title: string;
@@ -26,8 +26,10 @@ const ProductList = ({
       </div>
       <div className="flex flex-col gap-1 *:text-gray-800 *:dark:text-white">
         <span className="text-lg">{title}</span>
-        <span className="text-sm text-neutral-500">{created_at.toString()}</span>
-        <span className="text-lg font-semibold">{getCurrencyFormat(price)}</span>
+        <span className="text-sm text-neutral-500">
+          {formatToTimeAgo(created_at.toString())}
+        </span>
+        <span className="text-lg font-semibold">{formatToWon(price)}</span>
         <span className="text-md">{description}</span>
       </div>
     </Link>
