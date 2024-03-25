@@ -15,18 +15,24 @@ export const getSession = () => {
 // 사용자 정보(id) 가져오기
 export const getUser = async () => {
   const session = await getSession(); // 복호화 된 쿠키 반환
+  console.log('async getUser() -----');
+  console.log(session);
   const user = session.id
     ? await db.user.findUnique({ where: { id: session.id } })
     : null;
+
+  console.log(user);
   return user ? user : notFound(); // 확인된 사용자 정보 없다면 404 처리
 };
 
 // 로그인 - 사용자 정보를 암호화 후 쿠키에 저장
 export const saveLoginSession = async (user: SessionContent) => {
   const session = await getSession();
-  session.id = user.id;
+  session.id = user.user_id ?? user.id;
   await session.save(); // 정보 암호화 후 쿠키에 저장
-  return redirect('/profile');
+  // SMS 로그인이라면, 인증토큰 삭제
+  user.user_id && (await db.sMSToken.delete({ where: { id: user.id } }));
+  redirect('/profile');
 };
 
 // 로그아웃 - 쿠키에서 사용자 정보 제거

@@ -22,31 +22,38 @@ const SMSLogin = () => {
         <h1 className="text-2xl">안녕하세요!</h1>
         <h2 className="text-xl">전화번호 인증을 진행해주세요.</h2>
       </div>
-      <form onSubmit={onSubmitHandler} action={dispatch} className="flex flex-col gap-3">
-        {state.token ? (
-          <Input
-            name="token"
-            type="number"
-            value={form.token}
-            onChange={(e) => setForm({ ...form, token: e.target.value })}
-            placeholder="인증번호"
-            required
-            min={100000}
-            max={999999}
-          />
-        ) : (
-          <Input
-            name="phone"
-            type="text"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            placeholder="전화번호"
-            required
-            errors={state.error?.formErrors}
-          />
-        )}
-        <Button text={state.token ? '인증하기' : '인증문자 보내기'} />
-      </form>
+      {state && (
+        <form
+          onSubmit={onSubmitHandler}
+          action={dispatch}
+          className="flex flex-col gap-3"
+        >
+          {state.token ? (
+            <Input
+              name="token"
+              type="number"
+              value={form.token}
+              onChange={(e) => setForm({ ...form, token: e.target.value })}
+              placeholder="인증번호"
+              required
+              min={100000}
+              max={999999}
+              errors={state.error?.formErrors}
+            />
+          ) : (
+            <Input
+              name="phone"
+              type="text"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="전화번호"
+              required
+              errors={state.error?.formErrors}
+            />
+          )}
+          <Button text={state.token ? '인증하기' : '인증문자 보내기'} />
+        </form>
+      )}
     </div>
   );
 };
