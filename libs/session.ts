@@ -15,13 +15,9 @@ export const getSession = () => {
 // 사용자 정보(id) 가져오기
 export const getUser = async () => {
   const session = await getSession(); // 복호화 된 쿠키 반환
-  console.log('async getUser() -----');
-  console.log(session);
   const user = session.id
     ? await db.user.findUnique({ where: { id: session.id } })
     : null;
-
-  console.log(user);
   return user ? user : notFound(); // 확인된 사용자 정보 없다면 404 처리
 };
 

@@ -6,6 +6,7 @@ import { ActionState } from '@/app/sms/types';
 import crypto from 'crypto';
 import db from '@/libs/db';
 import { saveLoginSession } from '@/libs/session';
+import twilio from 'twilio';
 
 const phoneSchema = z
   .string()
@@ -80,6 +81,16 @@ export const smsLogIn = async (
         },
       });
       // 트윌리오로 토큰 보내기
+      const client = twilio(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN,
+      );
+      await client.messages.create({
+        body: `당근 인증번호: ${token}`,
+        from: process.env.TWILIO_PHONE_NUMBER!,
+        // to: phoneValid.data // 실제 서비스에서 활성화 - 트윌리오 계정 업그레이드 선행 필요
+        to: process.env.MY_PHONE_NUMBER!,
+      });
       return { token: true };
     }
   } else {

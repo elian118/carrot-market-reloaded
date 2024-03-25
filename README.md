@@ -441,11 +441,11 @@ ___
     https://pris.ly/d/getting-started
     ```
     
-    순서대로 하려면 먼저 .env 파일을 확인하고 데이터베이스 정보를 입력해준다.<br/>
+    순서대로 하려면 먼저 `.env` 파일을 확인하고 데이터베이스 정보를 입력해준다.<br/>
     데이터베이스 정보(DATABASE_URL)는 개발자가 선택한 데이터베이스 유형마다 다른 패턴을 가지므로<br/>
     프리즈마 공식 사이트에서 정확히 확인하고 기재해야 한다.<br/><br/>
    
-    * 초기 .env 파일을 보면, 데이터베이스별 프리즈마 연동법을 설명한 [상세 페이지](https://pris.ly/d/connection-strings)가 기재돼 있으니 확인
+    * 초기 `.env` 파일을 보면, 데이터베이스별 프리즈마 연동법을 설명한 [상세 페이지](https://pris.ly/d/connection-strings)가 기재돼 있으니 확인
     * 데이터베이스 정보는 노출해서는 안 되는 개인정보이므로, .gitignore 파일에 `.env` 추가 필수
     ```dotenv
     # Environment variables declared in this file are automatically made available to Prisma.
@@ -678,9 +678,68 @@ ___
 2. SMS 문자 인증<br/><br/>
 
     이 프로젝트는 [트윌리오](https://www.twilio.com/en-us)로 문자 인증을 진행한다.<br/>
-    평가판에 비용 $15.5가 든다고 하는데,<br/>
-    이 금액이 언제 청구되는지는 정확한 과금 방식을 알 수 없다.<br/><br/>
-    어쨌든, 적용방법은 트윌리오의 [Programmable Messaging](https://www.twilio.com/docs/messaging) 공식문서에서 확인 가능하다.
+    트윌리오 문자인증 적용방법은 [인증(Verify)](https://www.twilio.com/docs/verify) 공식문서에서 확인 가능하며,<br/><br/>
+    의존성은 아래와 같이 설치한다.
+    ```shell
+    yarn add twilio
+    ```
+    또, 트윌리오의 문자인증 기능을 사용하려면 그것과 별개로 [문자전송(Messaging)](https://console.twilio.com/us1/develop/sms/overview) 서비스를 추가 사용해야 한다.<br/>
+    * 문자전송 링크는 트윌리오 계정 로그인 후 접근 가능<br/><br/>
+    
+    인증번호를 발송하는 기능이 있어야 그렇게 발송된 문자의 인증번호를 읽고 문자인증까지 할 수 있기 때문이다.<br/>
+    결국 트윌리오 인증에는 [인증(Verify)](https://www.twilio.com/docs/verify)과 [문자전송(Messaging)](https://console.twilio.com/us1/develop/sms/overview) 두 서비스가 모두 필요하다.<br/><br/>
+
+    트윌리오 메시징에는 SMS 문자 발송에 필요한 가상의 전화번호가 필요하며 트윌리오에서 구매 가능하다.<br/>
+    단, 이 가상번호는 월 통신 이용료가 발생한다.<br/>
+    * 트윌리오 평가판에서는 무료 캐시 $15.5가 지원되므로 얼마간은 부담 없이 쓸 수 있다.<br/><br/>
+    
+    가상번호는 콘솔에서 Phone Numbers > Manage > Buy a number 에서 구매할 수 있다.<br/>
+    구매 시 해당 번호로 문자 전송이 가능한지 여부를 꼭 확인하고 사야 한다.<br/><br/>
+
+    하지만, 문자전송 개요 페이지에서 이미 `Try SMS` 버튼을 눌렀다면, 이미 구매를 완료했을 것이다.<br/><br/>
+
+    발급된 가상번호를 확인하려면 콘솔 초기 화면으로 이동하면 된다.<br/>
+    여기서, Account SID, Auth Token, 전용 트윌리오 가상번호를 확인할 수 있다.<br/>
+    이 정보는 트윌리오 서비스 이용 시 꼭 필요하므로, `.evn` 파일에 환경변수로 저장해 두고 사용한다.
+
+    ```javascript
+    // 트윌리오로 토큰 보내기
+    const client = twilio(
+      process.env.TWILIO_ACCOUNT_SIC,
+      process.env.TWILIO_AUTH_TOKEN,
+    );
+   
+    await client.messages.create({
+      body: `인증번호: ${token}`,
+      from: process.env.TWILIO_PHONE_NUMBER!,
+      // to: phoneValid.data // 실제 서비스에서 활성화 - 트윌리오 계정 업그레이드 선행 필요
+      to: process.env.MY_PHONE_NUMBER!,
+    });
+    ```
+
+    평가판은 오직 하나의 가상번호만 사용 가능하고,<br/>
+    인증번호 수신도 오직 트윌리오 가입자 본인의 전화번호만 사용 가능하다.<br/>
+    따라서, 개발 완료 후 서비스 출시 이후에는 트윌리오 계정을 업그레이드 해야 한다.<br/><br/>
+
+    현재 트윌리오는 지금도 멀쩡히 2FA 인증에 사용되는 전화번호를 수신자 정보인<br/>
+    `MY_PHONE_NUMBER`로 입력해도 알 수 없는 이유로 트윌리오 측에서<br/>
+    `unverified` 번호로 간주해 테스트가 불가한 상태다.<br/><br/>
+
+    정상적인 인증된 개인 전화번호 입력에도<br/>
+    아래 경고가 뜨면 **차라리 다른 서비스 이용을 권한다.**<br/>
+    전화번호를 초기화하고 다시 변경해도 차도가 없는 걸 보면<br/>
+    아무래도, 트윌리오 문자전송 서비스의 전화번호를 처리하는 정규식에 문제가 있는 듯하다.
+
+    ```shell
+    Error: The number [내전화번호] is unverified. 
+    Trial accounts cannot send messages to unverified numbers; 
+    verify [내전화번호] at twilio.com/user/account/phone-numbers/verified, 
+      or purchase a Twilio number to send messages to unverified numbers
+   
+    // +8210... -> +82010... 처리되고 있음 확인
+    ```
+
+3. 문자인증 관련 데이터베이스 사용<br/><br/>
 
     인증에 사용되는 토큰은 관계형 데이터베이스에 서버측 상태로 잠시 저장하고 용무가 끝나면 지우는 형식이다.<br/>
     여기서는 프리즈마를 사용해 데이터를 조작하므로 아래와 같이 처리한다.
