@@ -3,10 +3,9 @@
 import { z } from 'zod';
 import validator from 'validator';
 import { ActionState } from '@/app/sms/types';
-import crypto from 'crypto';
 import db from '@/libs/db';
 import { saveLoginSession } from '@/libs/session';
-import twilio from 'twilio';
+import { createToken, doesTokenExists, getToken } from '@/app/sms/utils';
 
 const phoneSchema = z
   .string()
@@ -16,32 +15,11 @@ const phoneSchema = z
     '유효하지 않은 전화번호입니다.',
   );
 
-const doesTokenExists = async (token: number) => {
-  const exists = await db.sMSToken.findUnique({
-    where: { token: token.toString() },
-    select: { id: true },
-  });
-  return Boolean(exists);
-};
-
 const tokenSchema = z.coerce
   .number()
   .min(100000)
   .max(999999)
   .refine(doesTokenExists, '존재하지 않는 토큰입니다.');
-
-const getToken = async (): Promise<any> => {
-  const token = crypto.randomInt(100000, 999999).toString();
-  const exists = await db.sMSToken.findUnique({
-    where: { token },
-    select: { id: true },
-  });
-  if (exists) {
-    return getToken(); // 재귀 호출
-  } else {
-    return token;
-  }
-};
 
 export const smsLogIn = async (
   prevState: ActionState,
@@ -66,31 +44,9 @@ export const smsLogIn = async (
       });
       // 토큰 생성
       const token = await getToken();
-      await db.sMSToken.create({
-        data: {
-          token,
-          user: {
-            connectOrCreate: {
-              where: { phone: phoneValid.data },
-              create: {
-                username: crypto.randomBytes(10).toString('hex'),
-                phone: phoneValid.data,
-              },
-            },
-          },
-        },
-      });
+      await createToken(token, phoneValid.data);
       // 트윌리오로 토큰 보내기
-      const client = twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN,
-      );
-      await client.messages.create({
-        body: `당근 인증번호: ${token}`,
-        from: process.env.TWILIO_PHONE_NUMBER!,
-        // to: phoneValid.data // 실제 서비스에서 활성화 - 트윌리오 계정 업그레이드 선행 필요
-        to: process.env.MY_PHONE_NUMBER!,
-      });
+      // await sendTokenToTwilio(token); // fixme: 트윌리오에 문제가 있어 주석으로 차단.
       return { token: true };
     }
   } else {
