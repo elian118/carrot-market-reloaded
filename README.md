@@ -197,7 +197,7 @@ ___
     ]
     ```
     
-    플러그인 적용 시 미리 npm 설치 후 서버를 재식작해야 함에 주의!
+    플러그인 적용 시 미리 npm 설치 후 서버를 재시작해야 함에 주의!
 
 
 ## #4. Authentication UI
@@ -658,3 +658,63 @@ ___
     실제 해당 id와 매칭되는 사용자 존재여부는 직접 판단하지 않는다.<br/><br/>
     
     * 자세한 미들웨어 설정법은 [Next.JS 미들웨어 설정 메뉴얼](https://nextjs.org/docs/app/building-your-application/routing/middleware) 참고
+
+## #9. Social Authentication
+___
+1. Github 인증 로그인<br/><br/>
+
+    깃허브는 OAuth 서비스를 통해 사용자가 자신의 깃허브 계정을 사용해<br/>
+    다른 웹사이트나 애플리케이션에 로그인하거나 정보를 안전하게 공유할 수 있도록 지원한다.<br/><br/>
+
+    설정방법은 깃허브 공식 문서를 확인하면 된다.<br/>
+    OAuth를 사용하려면 우선, OAuth 앱을 만들어야 한다.<br/><br/>
+    [➝ OAuth 앱 만들기](https://docs.github.com/ko/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)<br/>
+    [➝ 신규 OAuth 앱 등록 페이지 바로가기](https://github.com/settings/applications/new)<br/><br/>
+
+   OAuth 앱 등록을 완료하면 아래 안내대로 애플리케이션에 적용하면 된다.<br/><br/>
+   
+    [➝ OAuth 앱을 사용해 인증하기](https://docs.github.com/ko/apps/oauth-apps/building-oauth-apps/authenticating-to-the-rest-api-with-an-oauth-app)<br/><br/>
+
+2. SMS 문자 인증<br/><br/>
+
+    이 프로젝트는 [트윌리오](https://www.twilio.com/en-us)로 문자 인증을 진행한다.<br/>
+    평가판에 비용 $15.5가 든다고 하는데,<br/>
+    이 금액이 언제 청구되는지는 정확한 과금 방식을 알 수 없다.<br/><br/>
+    어쨌든, 적용방법은 트윌리오의 [Programmable Messaging](https://www.twilio.com/docs/messaging) 공식문서에서 확인 가능하다.
+
+    인증에 사용되는 토큰은 관계형 데이터베이스에 서버측 상태로 잠시 저장하고 용무가 끝나면 지우는 형식이다.<br/>
+    여기서는 프리즈마를 사용해 데이터를 조작하므로 아래와 같이 처리한다.
+    
+    ```javascript
+    // 이전 토큰 삭제
+    await db.sMSToken.deleteMany({
+      where: {
+        user: { phone: phoneValid.data },
+      },
+    });
+   
+    // 트윌리오에서 인증토큰을 생성해 가져온다.
+    // 인증토큰은 사용자의 전화기로 수신한 SMS 문자에 적힌 인증번호와 같다.
+    const token = await getToken();
+    await db.sMSToken.create({
+      data: {
+        token,
+        user: {
+          /* SMSToken 테이블은 User 테이블과 JOIN 관계 - 데이터 생성 시 연결된 사용자 정보가 꼭 필요하다.
+             connectOrCreate: 연결할 사용자 정보가 있으면 연결, 없으면 신규 사용자 정보 생성
+   
+            * 참고: 서비스 정책 상 사용자 정보가 확실히 존재할 수밖에 없는 상황이라면 
+                  connectOrCreate 대신 create를 써도 충분하다 */
+          connectOrCreate: {
+            where: { phone: phoneValid.data },
+            // 기존 사용자 중 인증에 사용된 전화번호가 없다면 신규 사용자로 추가
+            create: {
+              username: crypto.randomBytes(10).toString('hex'),
+              phone: phoneValid.data,
+            },
+          },
+        },
+      },
+    });
+    ```
+    
