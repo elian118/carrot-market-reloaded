@@ -820,6 +820,38 @@ ___
       },
     });
     ```
+## # 10. Products
+___
+1. 외부 이미지 허용
+
+    넥스트는 설정에서 허용되지 않은 외부 이미지는 `<Image />` 컴포넌트에서 처리할 수 없다.<br/>
+   `<Image />`는 브라우저와 사진 크기에 따라 알맞게 자동 최적화해주는 넥스트 내부 컴포넌트다.<br/><br/>
+
+    단순히, 외부 이미지를 `<Image />`에서 보여지게게 하려면<br/>
+    next.config.js 파일을 아래와 같이 설정한다.<br/>
+    ```javascript
+    const nextConfig = {
+      images: {
+        domains: ['avatars.githubusercontent.com'],
+      },
+      ...
+    ```
+    그러나, 이미지 최적화까지 고려한다면 아래와 같이 설정해줘야 한다.
+    ```javascript
+    const nextConfig = {
+      images: {
+        remotePatterns: [
+          {
+            hostname: 'avatars.githubusercontent.com',
+          }
+        ]
+      },
+      ...
+    ```
+    위 설정 없이 외부 이미지를 `src` 속성에 넣을 경우, 오류가 발생한다.<br/>
+    최적화에는 리소스 소모가 불가피하므로, 무분별한 허용을 막자는 취지로 보인다.<br/><br/>
+    [참고자료 - 넥스트 이미지 최적화](https://nextjs.org/docs/app/building-your-application/optimizing/images)
+    
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 서버로 직접 통과할 수 없다.
