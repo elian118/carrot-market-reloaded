@@ -14,7 +14,15 @@ const ProductList = ({ title, price, created_at, photo, id }: ProductListProps) 
   return (
     <Link href={`/products/${id}`} className="flex gap-5 active:scale-95">
       <div className="relative size-28 rounded-md overflow-hidden">
-        <Image fill className="object-cover" src={photo} alt={title} loading="lazy" />
+        <Image
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority
+          className="object-cover"
+          src={photo}
+          alt={title}
+          // loading="lazy"
+        />
       </div>
       <div className="flex flex-col gap-1 *:text-gray-800 *:dark:text-white">
         <span className="text-lg">{title}</span>

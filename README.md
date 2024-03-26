@@ -870,7 +870,92 @@ ___
     ```
     위 설정 없이 외부 이미지를 `src` 속성에 넣을 경우, 오류가 발생한다.<br/>
     최적화에는 리소스 소모가 불가피하므로, 무분별한 허용을 막자는 취지로 보인다.<br/><br/>
-    [참고자료 - 넥스트 이미지 최적화](https://nextjs.org/docs/app/building-your-application/optimizing/images)
+    [참고자료 - 넥스트 이미지 최적화](https://nextjs.org/docs/app/building-your-application/optimizing/images)<br/><br/>
+2. 무한 스크롤 원리<br/><br/>
+    
+    상품목록에 적용된 무한 스크롤은 `useEffect`에서 `IntersectionObserver` 인터페이스를 통해 구현됐다.<br/>
+    ```javascript
+    const trigger = useRef<HTMLSpanElement>(null);
+   
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+          console.log(entries);
+        },
+      );
+      trigger.current && observer.observe(trigger.current);
+      // 클린업
+      return () => {
+        observer.disconnect(); // 옵저버 제거
+      };
+    }, [page]);
+   
+    return (
+      <div className="mb-20 p-5 flex flex-col gap-5 overflow-y-auto">
+        {products.length > 0 ? (
+         products.map((product) => <ProductList key={product.id} {...product} />)
+        ) : (
+          <NoProduct />
+        )}
+        {isLastPage ? (
+         <span className="mx-auto py-4 text-lg">모든 상품을 불러왔습니다.</span>
+        ) : (
+          <span ref={trigger} className='...'>
+            {isLoading ? '로딩 중' : '더 불러오기'}
+          </span>
+        )}
+      </div>
+    );
+    ```
+    `IntersectionObserver`는 관찰자(옵저버)로서 아래와 같이 인터페이스가 정의돼 있고<br/>
+    `observer(대상)` 메소드로 대상을 관찰한다.
+    
+    ```javascript
+    declare var IntersectionObserver: {
+      prototype: IntersectionObserver;
+      new(callback: IntersectionObserverCallback, options?: IntersectionObserverInit): IntersectionObserver;
+    };
+    ```
+    `IntersectionObserverCallback`은 아래와 같다.
+    ```javascript
+    interface IntersectionObserverCallback {
+      (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void;
+    }
+    ```
+    위 코드에서 콘솔 내용은 아래와 같이 정보가 확인되는데,
+    ```javascript
+    [IntersectionObserverEntry]
+    0: IntersectionObserverEntry
+      boundingClientRect: DOMRectReadOnly {x: 553.484375, y: 2911, width: 88.03125, height: 36, top: 2911, …}
+      intersectionRatio: 0
+      intersectionRect: DOMRectReadOnly {x: 0, y: 0, width: 0, height: 0, top: 0, …}
+      isIntersecting: false
+      isVisible: false
+      rootBounds: DOMRectReadOnly {x: 0, y: 0, width: 1195, height: 913, top: 0, …}
+      target: span.mt-[300vh].mb=86.text-sm.font-semibold.bg-orange-500.w-fit.mx-auto.px-3.py-2.rounded-md.hover:opacity-90.active:scale-95
+      time: 86788.80000000075
+      [[Prototype]]: IntersectionObserverEntry
+      length: 1
+    [[Prototype]]: Array(0)
+    ```
+    휠을 아래로 내려 추적대상인 `<span ref={trigger} {...props} />`이 화면에 보이게 되면<br/>
+    아래와 같이 `isIntersecting` 정보가 `false` ➝ `true`로 갱신됐음을 알 수 있다.
+    ```javascript
+    [IntersectionObserverEntry]
+    0: IntersectionObserverEntry
+      boundingClientRect: 
+      DOMRectReadOnly {x: 553.484375, y: 902.5, width: 88.03125, height: 36, top: 902.5, …}
+      intersectionRatio: 0.2916666567325592
+      intersectionRect: DOMRectReadOnly {x: 553.484375, y: 902.5, width: 88.03125, height: 10.5, top: 902.5, …}
+      isIntersecting: true // 변경
+      isVisible: false
+      rootBounds: DOMRectReadOnly {x: 0, y: 0, width: 1195, height: 913, top: 0, …}
+      target: span.mt-[300vh].mb=86.text-sm.font-semibold.bg-orange-500.w-fit.mx-auto.px-3.py-2.rounded-md.hover:opacity-90.active:scale-95
+      time: 4164.5
+      [[Prototype]]: IntersectionObserverEntry
+      length: 1
+    [[Prototype]]: Array(0) 
+    ```
     
 ## # 주의사항
 ___
