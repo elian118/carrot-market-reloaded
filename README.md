@@ -381,7 +381,7 @@ ___
     ```
    - coerce - 숫자타입 입력값 검사<br/><br/>
      인풋은 입력 값을 무엇으로 받든 모두 string으로 전달<br/>
-     따라서, 인풋의 number 타입 입력 값은 정확한 검사를 위해 coerce를 거쳐야 한다.
+     따라서, 인풋의 number 타입 입력 값은 정확한 검사를 위해 coerce를 거쳐야 한다.<br/><br/>
    ```javascript
     'use server';
 
@@ -446,7 +446,7 @@ ___
     프리즈마 공식 사이트에서 정확히 확인하고 기재해야 한다.<br/><br/>
    
     * 초기 `.env` 파일을 보면, 데이터베이스별 프리즈마 연동법을 설명한 [상세 페이지](https://pris.ly/d/connection-strings)가 기재돼 있으니 확인
-    * 데이터베이스 정보는 노출해서는 안 되는 개인정보이므로, .gitignore 파일에 `.env` 추가 필수
+    * 데이터베이스 정보는 노출해서는 안 되는 개인정보이므로, .gitignore 파일에 `.env` 추가 필수<br/><br/>
     ```dotenv
     # Environment variables declared in this file are automatically made available to Prisma.
     # See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
@@ -471,7 +471,7 @@ ___
     `.env` 파일에 환경변수로 입력된 DATABASE_URL과<br/>
     `schema.prisma` 파일에 입력된 스키마 모델을 토대로<br/>
     새로운 데이터베이스를 만들어주는 명령이다 
-    * 이 명령은 스키마를 변경했을 때마다 재실해줘야 한다.
+    * 이 명령은 스키마를 변경했을 때마다 재실행해줘야 한다.<br/><br/>
     ```shell
     npx prisma migrate dev
     ```
@@ -959,7 +959,8 @@ ___
     
 ## # 주의사항
 ___
-1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 서버로 직접 통과할 수 없다.
+1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.
+
     ```javascript
     import { removeProduct } from '@/app/products/[id]/features';
     import db from '@/libs/db';
@@ -982,6 +983,7 @@ ___
     export default ProductDetail;
     ```
     - 직접 접근 시 아래 오류가 뜬다.
+
     ```shell
     Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server".
       <form action={function} children=...>
