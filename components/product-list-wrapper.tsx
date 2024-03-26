@@ -15,13 +15,18 @@ const ProductListWrapper = ({ initialProducts }: ProductListWrapperProps) => {
   const [products, setProducts] = useState<InitialProducts>(initialProducts);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const [isLastPage, setIsLastPage] = useState<boolean>(false);
+
+  const fetchData = (newProducts: InitialProducts) => {
+    setProducts((prev: any) => [...prev, ...newProducts]);
+    setPage((prev) => prev + 1);
+  };
 
   const onLoadMoreClick = async () => {
     setIsLoading(true);
     // await new Promise((res) => setTimeout(res, 5000));
     const newProducts: any[] = await getMoreProducts(page);
-    setProducts((prev: any) => [...prev, ...newProducts]);
-    setPage((prev) => prev + 1);
+    newProducts.length > 0 ? fetchData(newProducts) : setIsLastPage(true);
     setIsLoading(false);
   };
 
@@ -32,7 +37,11 @@ const ProductListWrapper = ({ initialProducts }: ProductListWrapperProps) => {
       ) : (
         <NoProduct />
       )}
-      <Button text="더 불러오기" isLoading={isLoading} onClick={onLoadMoreClick} />
+      {isLastPage ? (
+        <span className="mx-auto py-4 text-lg">모든 상품을 불러왔습니다.</span>
+      ) : (
+        <Button text="더 불러오기" isLoading={isLoading} onClick={onLoadMoreClick} />
+      )}
     </div>
   );
 };

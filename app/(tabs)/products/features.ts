@@ -30,7 +30,7 @@ export const getMoreProducts = async (page: number) => {
       description: true,
       id: true,
     },
-    skip: page,
+    skip: CONTENT_PER_PAGE * page,
     take: CONTENT_PER_PAGE,
     orderBy: {
       created_at: 'desc',
