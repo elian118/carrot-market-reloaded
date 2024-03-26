@@ -496,7 +496,8 @@ ___
     
     - `node_modules/prisma/client`,<br/>
     - `node_modules/@prisma/@client`<br/><br/>
-    이 코드들 또한 개발에 활용 가능하므로 다음과 같이 import 해서 쓰면 된다.<br/>
+    이 코드들 또한 개발에 활용 가능하므로 다음과 같이 import 해서 쓰면 된다.<br/><br/>
+    - 등록
     ```javascript
     import { PrismaClient } from '@prisma/client';
    
@@ -513,6 +514,48 @@ ___
    
     test();
     ```
+    ```sql
+    INSERT INTO user (username) VALUES ('test');
+    ```
+    - 조회 - JOIN
+    ```javascript
+    export const getProduct = async (id: number) => 
+      db.product.findUnique({
+        where: { id },
+        include: {
+         user: {
+           select: {
+             username: true,
+             avatar: true,
+           },
+         },
+      },
+    });
+    ```
+    ```sql
+    SELECT
+      product.id,
+      product.name,
+      product.description,
+      product.price,
+      product.image,
+      product.created_at,
+      product.updated_at,
+      user.username,
+      user.avatar
+    FROM product
+    INNER JOIN user ON product.user_id = user.id
+    WHERE product.id = ?;
+    ```
+    - 삭제
+    ```javascript
+    await db.product.delete({
+      where: { id: id },
+    });
+    ```
+    ```sql
+    DELETE FROM product WHERE id = ?;
+    ```
     디비버와 같은 데이터베이스 관리 프로그램을 쓴다면 상관 없지만<br/>
     프리즈마에서 제공하는 무료 데이터베이스 프로그램 '프리즈마 스튜디오'를 사용하고 싶다면<br/> 
     터미널에서 아래 명령을 실행한다.<br/><br/>
@@ -522,6 +565,7 @@ ___
     ```shell
     npx prisma studio
     ```
+
 
 ## #8. Authentication
 ___
@@ -776,4 +820,34 @@ ___
       },
     });
     ```
-    
+## # 주의사항
+___
+1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 서버로 직접 통과할 수 없다.
+    ```javascript
+    import { removeProduct } from '@/app/products/[id]/features';
+    import db from '@/libs/db';
+
+    ...
+    const delProduct = async () => {
+      'use server';
+      await removeProduct(product.id);
+    };
+
+    return (
+      ...
+        <form action={delProduct}>
+          {isOwner && <Button text="상품 삭제" method="delete" />}
+        </form>
+      ...
+      );
+    };
+
+    export default ProductDetail;
+    ```
+    - 직접 접근 시 아래 오류가 뜬다.
+    ```shell
+    Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server".
+      <form action={function} children=...>
+                   ^^^^^^^^^^
+        at stringify (<anonymous>)
+    ```
