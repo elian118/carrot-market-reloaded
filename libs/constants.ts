@@ -10,3 +10,5 @@ export enum INVALID {
   STRING = '문자여야 합니다.',
   INPUT = '입력해주세요.',
 }
+
+export const CONTENT_PER_PAGE = 1;

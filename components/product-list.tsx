@@ -7,22 +7,14 @@ type ProductListProps = {
   price: number;
   created_at: Date;
   photo: string;
-  description: string;
   id: number;
 };
 
-const ProductList = ({
-  title,
-  price,
-  created_at,
-  photo,
-  id,
-  description,
-}: ProductListProps) => {
+const ProductList = ({ title, price, created_at, photo, id }: ProductListProps) => {
   return (
-    <Link href={`/products/${id}`} className="flex gap-5">
+    <Link href={`/products/${id}`} className="flex gap-5 active:scale-95">
       <div className="relative size-28 rounded-md overflow-hidden">
-        <Image fill src={photo} alt={title} />
+        <Image fill className="object-cover" src={photo} alt={title} loading="lazy" />
       </div>
       <div className="flex flex-col gap-1 *:text-gray-800 *:dark:text-white">
         <span className="text-lg">{title}</span>
@@ -30,7 +22,6 @@ const ProductList = ({
           {formatToTimeAgo(created_at.toString())}
         </span>
         <span className="text-lg font-semibold">{formatToWon(price)}</span>
-        <span className="text-md">{description}</span>
       </div>
     </Link>
   );

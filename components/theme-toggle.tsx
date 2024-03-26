@@ -14,7 +14,7 @@ export function ThemeToggle() {
 
   return (
     isMounted && (
-      <div className="absolute top-4 right-4 z-10">
+      <div className="fixed top-4 right-4 z-10">
         <div className="flex flex-col gap-2 *:rounded-full *:size-6">
           <button
             className="text-gray-900 dark:text-white rounded-md"

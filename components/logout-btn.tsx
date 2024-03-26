@@ -3,7 +3,7 @@ import { ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/solid';
 
 const LogoutBtn = async () => {
   return (
-    <div className="absolute top-14 right-4 z-10">
+    <div className="fixed top-14 right-4 z-10">
       <form action={logout}>
         <button>
           <ArrowRightStartOnRectangleIcon className="size-6 hover:text-orange-600" />

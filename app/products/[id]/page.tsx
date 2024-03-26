@@ -2,7 +2,6 @@ import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/featu
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
-import Link from 'next/link';
 import { formatToWon } from '@/libs/utils';
 import Button from '@/components/button';
 
@@ -27,7 +26,12 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
       <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
         <div className="size-10 rounded-full relative overflow-hidden">
           {!!product.user.avatar ? (
-            <Image fill src={product.user.avatar} alt={product.user.username} />
+            <Image
+              fill
+              className="object-cover"
+              src={product.user.avatar}
+              alt={product.user.username}
+            />
           ) : (
             <UserIcon className="size-10" />
           )}
@@ -50,12 +54,10 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
               {isOwner && <Button text="상품 삭제" method="delete" />}
             </form>
           </div>
-          <Link
-            className="bg-orange-500 px-5 py-2.5 rounded-md text-white font-semibold"
-            href={``}
-          >
-            채팅하기
-          </Link>
+          <div className="flex gap-2">
+            <Button text="돌아가기" src="/products" />
+            <Button text="채팅하기" src={`/chat/${id}`} />
+          </div>
         </div>
       </div>
     </div>

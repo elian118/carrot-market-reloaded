@@ -14,7 +14,7 @@ const TabBar = () => {
         <Link
           key={idx}
           href={tab.link}
-          className="flex flex-col items-center gap-px group"
+          className="flex flex-col items-center gap-px group active:scale-90"
         >
           {pathname === tab.link ? tab.selectedIcon : tab.icon}
           <span className="group-hover:text-orange-600">{tab.title}</span>

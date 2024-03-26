@@ -547,6 +547,26 @@ ___
     INNER JOIN user ON product.user_id = user.id
     WHERE product.id = ?;
     ```
+    - 조회 - 페이지네이션: `skip`, `take` 키 사용
+    ```javascript
+    export const getMoreProducts = async (page: number) => {
+      return db.product.findMany({
+        select: {
+        title: true,
+        price: true,
+        created_at: true,
+        photo: true,
+        description: true,
+        id: true,
+        },
+        skip: page,
+        take: CONTENT_PER_PAGE,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+    };
+    ```
     - 삭제
     ```javascript
     await db.product.delete({
