@@ -10,6 +10,7 @@ import {
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
 import { saveLoginSession } from '@/libs/session';
+import { getUserWithEmail } from '@/app/(auth)/login/services';
 
 const checkEmailExists = async (email: string) => {
   const user = await db.user.findUnique({
@@ -47,11 +48,9 @@ export const login = async (prevState: any, formData: FormData) => {
   if (!result.success) {
     return result.error.flatten();
   } else {
+    console.log('dd');
     // 사용자를 찾았다면 암호화된 비밀번호 검사
-    const user = await db.user.findUnique({
-      where: { email: result.data.email },
-      select: { id: true, password: true },
-    });
+    const user = await getUserWithEmail(result.data.email);
     const ok = await bcrypt.compare(result.data.password, user!.password ?? 'xxxx');
 
     if (ok) {

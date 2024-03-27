@@ -2,6 +2,9 @@
 
 import db from '@/libs/db';
 import { CONTENT_PER_PAGE } from '@/libs/constants';
+import { setQueryLog } from '@/libs/utils';
+
+setQueryLog('상품목록 조회');
 
 export const getInitialProducts = async () => {
   return db.product.findMany({

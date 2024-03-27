@@ -9,7 +9,7 @@ export default function Home() {
         <h2 className="text-2xl">당근 마켓에 어서오세요!</h2>
       </div>
       <div className="flex flex-col items-center gap-3 w-full">
-        <Link href="/create-account" className="primary-btn py-2.5 text-lg">
+        <Link href="/create-account" className="primary-btn py-2.5 text-lg text-white">
           시작하기
         </Link>
         <div className="flex gap-2">

@@ -978,7 +978,7 @@ ___
     return (
       ...
         <form action={delProduct}>
-          {isOwner && <Button text="상품 삭제" method="delete" />}
+          {isOwner && <Button type="submit" text="상품 삭제" method="delete" />}
         </form>
       ...
       );

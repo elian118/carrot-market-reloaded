@@ -51,7 +51,7 @@ const SMSLogin = () => {
               errors={state.error?.formErrors}
             />
           )}
-          <Button>{state.token ? '인증하기' : '인증문자 보내기'}</Button>
+          <Button type="submit">{state.token ? '인증하기' : '인증문자 보내기'}</Button>
         </form>
       )}
     </div>

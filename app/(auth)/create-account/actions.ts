@@ -11,6 +11,7 @@ import { hasSlang, isValidPw } from '@/app/(auth)/create-account/utils';
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
 import { saveLoginSession } from '@/libs/session';
+import { createUser } from '@/app/(auth)/create-account/services';
 
 const formSchema = z
   .object({
@@ -84,14 +85,7 @@ export const createAccount = async (prevState: any, formData: FormData) => {
     const hashedPassword = await bcrypt.hash(result.data.password, 12);
 
     // 데이터베이스에 사용자 정보 저장
-    const user = await db.user.create({
-      data: {
-        username: result.data.username,
-        email: result.data.email,
-        password: hashedPassword,
-      },
-      select: { id: true },
-    });
+    const user = await createUser(result.data, hashedPassword);
 
     // 로그인
     await saveLoginSession(user);

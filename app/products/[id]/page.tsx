@@ -1,4 +1,4 @@
-import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/features';
+import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/services';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
@@ -51,7 +51,11 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
           </span>
           <div>
             <form action={delProduct}>
-              {isOwner && <Button method="delete">상품 삭제</Button>}
+              {isOwner && (
+                <Button type="submit" method="delete">
+                  상품 삭제
+                </Button>
+              )}
             </form>
           </div>
           <div className="flex gap-2">

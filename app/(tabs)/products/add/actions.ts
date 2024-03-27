@@ -3,25 +3,14 @@
 import { z } from 'zod';
 import * as fs from 'fs/promises';
 import { INVALID } from '@/libs/constants';
-import db from '@/libs/db';
 import { getSession } from '@/libs/session';
 import { redirect } from 'next/navigation';
+import { createProduct } from '@/app/(tabs)/products/add/services';
 
 const addProduct = async (data: any) => {
   const session = await getSession();
   if (session.id) {
-    const product = await db.product.create({
-      data: {
-        title: data.title,
-        description: data.description,
-        price: data.price,
-        photo: data.photo,
-        user: {
-          connect: { id: session.id },
-        },
-      },
-      select: { id: true },
-    });
+    const product = await createProduct(data, session.id);
     redirect(`/products/${product.id}`);
   }
 };

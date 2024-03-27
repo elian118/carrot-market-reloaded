@@ -1,4 +1,4 @@
-import { getInitialProducts } from '@/app/(tabs)/products/features';
+import { getInitialProducts } from '@/app/(tabs)/products/services';
 import ProductListWrapper from '@/components/product-list-wrapper';
 import { InitialProducts } from '@/app/(tabs)/products/types';
 import { PlusIcon } from '@heroicons/react/24/solid';

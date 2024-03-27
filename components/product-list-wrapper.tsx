@@ -4,7 +4,7 @@ import ProductList from '@/components/product-list';
 import NoProduct from '@/components/no-product';
 import { InitialProducts } from '@/app/(tabs)/products/types';
 import { useEffect, useRef, useState } from 'react';
-import { getMoreProducts } from '@/app/(tabs)/products/features';
+import { getMoreProducts } from '@/app/(tabs)/products/services';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 
 type ProductListWrapperProps = {
