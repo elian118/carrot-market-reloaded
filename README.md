@@ -1,5 +1,9 @@
 # Carrot Market Reloaded
 
+## #개발환경
+___
+- node: v20.11.1
+
 ## #3. Tailwind css
 ___
 
