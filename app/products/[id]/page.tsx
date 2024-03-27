@@ -51,12 +51,12 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
           </span>
           <div>
             <form action={delProduct}>
-              {isOwner && <Button text="상품 삭제" method="delete" />}
+              {isOwner && <Button method="delete">상품 삭제</Button>}
             </form>
           </div>
           <div className="flex gap-2">
-            <Button text="돌아가기" src="/products" />
-            <Button text="채팅하기" src={`/chat/${id}`} />
+            <Button href="/products">돌아가기</Button>
+            <Button href={`/chat/${id}`}>채팅하기</Button>
           </div>
         </div>
       </div>

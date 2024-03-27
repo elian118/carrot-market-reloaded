@@ -30,7 +30,7 @@ const LogIn = () => {
           required
           errors={state?.fieldErrors.password}
         />
-        <Button text="로그인" />
+        <Button>로그인</Button>
       </form>
       <SocialLogin />
     </div>

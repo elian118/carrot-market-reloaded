@@ -12,7 +12,10 @@ type ProductListProps = {
 
 const ProductList = ({ title, price, created_at, photo, id }: ProductListProps) => {
   return (
-    <Link href={`/products/${id}`} className="flex gap-5 active:scale-95">
+    <Link
+      href={`/products/${id}`}
+      className="flex gap-5 active:scale-95 hover:scale-105 hover:bg-orange-100 hover:dark:bg-gray-600 hover:p-2 rounded-lg"
+    >
       <div className="relative size-28 rounded-md overflow-hidden">
         <Image
           fill

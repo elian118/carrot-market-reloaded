@@ -12,3 +12,5 @@ export enum INVALID {
 }
 
 export const CONTENT_PER_PAGE = 1;
+export const MB = 1048576;
+export const PLZ_ADD_PHOTO = '사진을 추가해주세요.';

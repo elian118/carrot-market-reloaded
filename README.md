@@ -982,7 +982,7 @@ ___
 
     export default ProductDetail;
     ```
-    - 직접 접근 시 아래 오류가 뜬다.
+    - 직접 접근 시 아래 오류가 뜬다.<br/><br/>
 
     ```shell
     Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server".

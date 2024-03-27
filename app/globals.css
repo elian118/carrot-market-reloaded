@@ -18,6 +18,10 @@
         font-family: "Nanum Gothic", sans-serif;
     }
 
+    input {
+        @apply text-gray-900 rounded-md;
+    }
+
     :root {
         --background: 0 0% 100%;
         --foreground: 222.2 84% 4.9%;
@@ -89,10 +93,10 @@
 
 @layer components {
     .primary-btn {
-        @apply w-full bg-orange-500 text-white font-medium rounded-md text-center hover:bg-orange-400 transition-colors;
+        @apply w-full bg-orange-500 *:text-white font-medium rounded-md text-center hover:bg-orange-400 transition-colors;
     }
 
     .delete-btn {
-        @apply w-full bg-red-500 text-white font-medium rounded-md text-center hover:bg-red-400 transition-colors;
+        @apply w-full bg-red-500 *:text-white font-medium rounded-md text-center hover:bg-red-400 transition-colors;
     }
 }
