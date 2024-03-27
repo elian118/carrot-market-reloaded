@@ -13,6 +13,7 @@ type ButtonProps = {
   isLoading?: boolean;
   method?: 'post' | 'delete';
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  fullWidth?: boolean;
 };
 const Button = ({
   children,
@@ -22,6 +23,7 @@ const Button = ({
   isLoading,
   onClick,
   method = 'post',
+  fullWidth = false,
 }: ButtonProps) => {
   const { pending } = useFormStatus();
 
@@ -30,7 +32,7 @@ const Button = ({
   ) : (
     <button
       type={type}
-      className={`px-6 w-fit mx-auto h-11 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed font-semibold active:scale-90 ${method === 'delete' ? 'delete-btn' : 'primary-btn'}`}
+      className={`px-6 ${fullWidth ? 'w-full flex justify-center items-center' : 'w-fit'} ${!fullWidth && 'mx-auto'} h-11 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed font-semibold active:scale-90 ${method === 'delete' ? 'delete-btn' : 'primary-btn'}`}
       disabled={isLoading ?? pending}
       onClick={onClick}
     >

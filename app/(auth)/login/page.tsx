@@ -5,9 +5,11 @@ import Button from '@/components/button';
 import SocialLogin from '@/components/social-login';
 import { useFormState } from 'react-dom';
 import { login } from './actions';
+import { useRouter } from 'next/navigation';
 
 const LogIn = () => {
   const [state, dispatch] = useFormState(login, null);
+  const router = useRouter();
 
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
@@ -30,9 +32,16 @@ const LogIn = () => {
           required
           errors={state?.fieldErrors.password}
         />
-        <Button type="submit">로그인</Button>
+        <Button type="submit" fullWidth>
+          로그인
+        </Button>
       </form>
+      <div className="w-full h-px bg-neutral-500" />
       <SocialLogin />
+      <div className="w-full h-px bg-neutral-500" />
+      <Button fullWidth onClick={() => router.push('/')}>
+        첫 화면으로
+      </Button>
     </div>
   );
 };

@@ -1,25 +1,48 @@
-import { setQueryLog } from '@/libs/utils';
-import db from '@/libs/db';
-import { getEmailId } from '@/app/(auth)/github/complete/utils';
+import { NextRequest } from 'next/server';
+import { notFound } from 'next/navigation';
+import { GitHubEmail } from '@/app/(auth)/github/complete/types';
 
-export const createGitHubUser = async (profile: any, email: string | null) => {
-  setQueryLog('깃허브 회원 가입 / 계정 생성');
-  const { id, avatar_url, twitter_username, name, login } = profile;
-  return db.user.create({
-    data: {
-      username: twitter_username ?? name ?? email ? getEmailId(email) : login,
-      github_id: String(id),
-      avatar: avatar_url,
-      email: email,
-    },
-    select: { id: true },
+export const getAccessToken = async (req: NextRequest) => {
+  const baseUrl = 'https://github.com/login/oauth/access_token';
+  const code = req.nextUrl.searchParams.get('code');
+
+  if (!code) return notFound();
+
+  const accessTokenParams = new URLSearchParams({
+    client_id: process.env.GITHUB_CLIENT_ID!,
+    client_secret: process.env.GITHUB_CLIENT_SECRET!,
+    code,
   });
+  const accessTokenUrl = `${baseUrl}?${accessTokenParams}`;
+  const accessTokenResponse = await fetch(accessTokenUrl, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+  });
+
+  const { error, access_token } = await accessTokenResponse.json();
+
+  if (error) return new Response(null, { status: 400 });
+  return access_token;
 };
 
-export const getGitHubUser = async (profileId: number) => {
-  setQueryLog('깃허브 회원 조회');
-  return db.user.findUnique({
-    where: { github_id: String(profileId) },
-    select: { id: true },
+export const getUserProfile = async (req: NextRequest, token: string) => {
+  const userProfileResponse = await fetch('https://api.github.com/user', {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-cache',
   });
+
+  return await userProfileResponse.json();
 };
+
+export const getUserEmail = async (req: NextRequest, token: string) => {
+  const userEmailsResponse = await fetch('https://api.github.com/user/emails', {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-cache',
+  });
+
+  const emails: GitHubEmail[] | null | undefined = await userEmailsResponse.json();
+  return emails && emails.length > 0 ? emails[0].email : null;
+};
+
+export const getEmailId = (email: string | null) =>
+  email ? email.slice(0, email.indexOf('@')) : null;

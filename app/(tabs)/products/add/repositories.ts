@@ -1,10 +1,8 @@
 import db from '@/libs/db';
 import { setQueryLog } from '@/libs/utils';
 
-setQueryLog('상품 등록');
-
 export const createProduct = async (data: any, sessionId: number) => {
-  return db.product.create({
+  const result = await db.product.create({
     data: {
       title: data.title,
       description: data.description,
@@ -16,4 +14,6 @@ export const createProduct = async (data: any, sessionId: number) => {
     },
     select: { id: true },
   });
+  setQueryLog('상품 등록', createProduct.name, result);
+  return result;
 };

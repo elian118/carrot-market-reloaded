@@ -5,7 +5,7 @@ import * as fs from 'fs/promises';
 import { INVALID } from '@/libs/constants';
 import { getSession } from '@/libs/session';
 import { redirect } from 'next/navigation';
-import { createProduct } from '@/app/(tabs)/products/add/services';
+import { createProduct } from '@/app/(tabs)/products/add/repositories';
 
 const addProduct = async (data: any) => {
   const session = await getSession();

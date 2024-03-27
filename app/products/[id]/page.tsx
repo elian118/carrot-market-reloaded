@@ -1,4 +1,4 @@
-import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/services';
+import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/repositories';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';

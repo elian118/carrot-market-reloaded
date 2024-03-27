@@ -17,11 +17,17 @@ export const formatToWon = (price: number): string =>
   // `₩ ${number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   `₩ ${price.toLocaleString('ko-KR')}`;
 
-export const setQueryLog = (info: string) => {
+export const setQueryLog = (roll: string, caller: string, result?: object | null) => {
   db.$on('query', (e) => {
-    console.log(chalk.black(chalk.bgCyan(`============> ${info} <============`)));
+    console.log(
+      chalk.black(chalk.bgCyan(`🔎🔎🔎  caller: ${caller} / roll: ${roll} 🔎🔎🔎`)),
+    );
     console.log(`${chalk.cyan('Query: ')}${e.query}`);
-    console.log(`${chalk.green('Params: ')}${e.params}`);
-    console.log(`${chalk.yellow('Duration: ')}${e.duration}ms`);
+    console.log(`${chalk.blue('Params: ')}${e.params}`);
+    console.log(
+      `${chalk.yellow('Duration: ')}${e.duration}ms ${e.duration >= 2 ? chalk.red('Too Lazy') : chalk.green('Good')}`,
+    );
+    result && console.log(`${chalk.cyan('Result:')} ${JSON.stringify(result, null, 2)}`);
+    console.log(chalk.black(chalk.bgCyan(`🎉🎉🎉  DONE! 🎉🎉🎉`)));
   });
 };

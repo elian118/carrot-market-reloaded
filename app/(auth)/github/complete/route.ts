@@ -4,8 +4,11 @@ import {
   getAccessToken,
   getUserEmail,
   getUserProfile,
-} from '@/app/(auth)/github/complete/utils';
-import { createGitHubUser, getGitHubUser } from '@/app/(auth)/github/complete/services';
+} from '@/app/(auth)/github/complete/services';
+import {
+  createGitHubUser,
+  getGitHubUser,
+} from '@/app/(auth)/github/complete/repositories';
 
 export const GET = async (req: NextRequest) => {
   const access_token: string = await getAccessToken(req);

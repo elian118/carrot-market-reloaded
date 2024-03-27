@@ -4,10 +4,8 @@ import db from '@/libs/db';
 import { CONTENT_PER_PAGE } from '@/libs/constants';
 import { setQueryLog } from '@/libs/utils';
 
-setQueryLog('상품목록 조회');
-
 export const getInitialProducts = async () => {
-  return db.product.findMany({
+  const result = await db.product.findMany({
     select: {
       title: true,
       price: true,
@@ -21,10 +19,12 @@ export const getInitialProducts = async () => {
       created_at: 'desc',
     },
   });
+  setQueryLog('첫 상품목록 조회', getInitialProducts.name, result);
+  return result;
 };
 
 export const getMoreProducts = async (page: number) => {
-  return db.product.findMany({
+  const result = await db.product.findMany({
     select: {
       title: true,
       price: true,
@@ -39,4 +39,6 @@ export const getMoreProducts = async (page: number) => {
       created_at: 'desc',
     },
   });
+  setQueryLog('상품목록 더 보기', getMoreProducts.name, result);
+  return result;
 };

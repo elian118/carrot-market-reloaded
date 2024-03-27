@@ -10,7 +10,7 @@ import {
 import db from '@/libs/db';
 import bcrypt from 'bcrypt';
 import { saveLoginSession } from '@/libs/session';
-import { getUserWithEmail } from '@/app/(auth)/login/services';
+import { getUserWithEmail } from '@/app/(auth)/login/repositories';
 
 const checkEmailExists = async (email: string) => {
   const user = await db.user.findUnique({

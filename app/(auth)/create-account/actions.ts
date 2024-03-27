@@ -8,10 +8,7 @@ import {
   PASSWORD_REGEX_ERROR,
 } from '@/libs/constants';
 import { hasSlang, isValidPw } from '@/app/(auth)/create-account/utils';
-import db from '@/libs/db';
-import bcrypt from 'bcrypt';
-import { saveLoginSession } from '@/libs/session';
-import { createUser } from '@/app/(auth)/create-account/services';
+import { isExistUser, signIn } from '@/app/(auth)/create-account/services';
 
 const formSchema = z
   .object({
@@ -35,34 +32,8 @@ const formSchema = z
       .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
     confirm_password: z.string().min(PASSWORD_MIN_LENGTH, INVALID.TOO_SHORT).trim(),
   })
-  .superRefine(async (data, ctx) => {
-    const user = await db.user.findUnique({
-      where: { username: data.username },
-      select: { id: true },
-    });
-    if (user) {
-      ctx.addIssue({
-        code: 'custom',
-        message: '이미 사용중인 이름입니다.',
-        path: ['username'],
-        fatal: true, // 이슈 발생 시 다음 유효성 검사 실행 안 함
-      });
-    }
-  })
-  .superRefine(async (data, ctx) => {
-    const user = await db.user.findUnique({
-      where: { email: data.email },
-      select: { id: true },
-    });
-    if (user) {
-      ctx.addIssue({
-        code: 'custom',
-        message: '해당 이메일로 가입된 회원이 이미 존재합니다.',
-        path: ['email'],
-        fatal: true, // 이슈 발생 시 다음 유효성 검사 실행 안 함
-      });
-    }
-  })
+  .superRefine((data, ctx) => isExistUser(data, ctx, 'username'))
+  .superRefine((data, ctx) => isExistUser(data, ctx, 'email'))
   .refine(({ password, confirm_password }) => isValidPw({ password, confirm_password }), {
     message: '입력된 비밀번호가 서로 다릅니다.',
     path: ['confirm_password'],
@@ -78,16 +49,6 @@ export const createAccount = async (prevState: any, formData: FormData) => {
 
   const result = await formSchema.spa(data); // spa Alias of safeParseAsync
 
-  if (!result.success) {
-    return result.error.flatten();
-  } else {
-    // 비밀번호 암호화
-    const hashedPassword = await bcrypt.hash(result.data.password, 12);
-
-    // 데이터베이스에 사용자 정보 저장
-    const user = await createUser(result.data, hashedPassword);
-
-    // 로그인
-    await saveLoginSession(user);
-  }
+  if (!result.success) return result.error.flatten();
+  else await signIn(result.data);
 };

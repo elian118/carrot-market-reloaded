@@ -49,7 +49,9 @@ const CreateAccount = () => {
           errors={state?.fieldErrors.confirm_password}
           minLength={PASSWORD_MIN_LENGTH}
         />
-        <Button type="submit">계정 생성</Button>
+        <Button type="submit" fullWidth>
+          계정 생성
+        </Button>
       </form>
       <SocialLogin />
     </div>

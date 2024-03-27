@@ -1,8 +1,24 @@
 # Carrot Market Reloaded
 
-## #개발환경
+## # 프로젝트 개요
 ___
 - node: v20.11.1
+- 디자인 패턴
+  - 앱라우트 페이지 MVVM 패턴 정의
+    - `constants.ts`: 상수 모음 [M] 
+    - `types.ts`: 모델 모음 [M]
+    - `repositories.ts`: DB 소통 쿼리 계층 [M]
+      - `services.ts` 또는 `actions.ts`에서 호출
+      - 클라이언트 컴포넌트는 훅에서 직접 `repositories.ts` 함수를 호출할 수도 있다.
+    - `page.ts`: 화면 [V]. (단, `route.ts`가 있다면 단순 경유 페이지에 불과하므로 해당 파일이 없다.)
+    - `styles`: CSS 모듈 스타일 모음 폴더 [V] 
+    - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
+    - `services.ts`: `actions.ts`에서 호출되는 로직 계층. 로직 없으면 `repositories.ts`로 건너 뜀 [VM+]
+    - `utils.ts`: 서비스 로직을 제외한 기타 연산 모음. 대부분의 공통 유틸은 `lib` 폴더 아래 존재
+  - 함수가 너무 많아지면, 파일명과 동일 폴더를 생성하고 그 하위에 여러 파일로 구분해 함수를 분류 저장한다.
+    - Ex. `services / commandServices.ts, queryServices.ts`
+  - CQRS 패턴은 굳이 무리해서 적용하지 않는다.
+- 출시 서비스가 아니므로, `Prisma`, `Debezium`, `Kafka` 조합의 데이터베이스 비동기 복제 설정은 생략한다. 
 
 ## #3. Tailwind css
 ___
