@@ -605,6 +605,68 @@ ___
     ```shell
     npx prisma studio
     ```
+3. 로그 보기
+    ```javascript
+    import { PrismaClient } from '@prisma/client';
+
+    const db = new PrismaClient({
+      log: [
+        {
+          emit: 'event',
+          level: 'query',
+        },
+        {
+          emit: 'stdout',
+          level: 'error',
+        },
+        {
+          emit: 'stdout',
+          level: 'info',
+        },
+        {
+          emit: 'stdout',
+          level: 'warn',
+        },
+      ],
+    });
+    
+    export default db;
+    ```
+    로그 형식을 지정하는 함수는 종단에서 실행될 수 없으므로, `libs/utils.ts` 유틸로 분리
+    ```javascript
+    export const setQueryLog = (roll: string, caller: string, result?: object | null) => {
+      db.$on('query', (e) => {
+        console.log(
+          chalk.black(chalk.bgCyan(`🔎🔎🔎  caller: ${caller} / roll: ${roll} 🔎🔎🔎`)),
+        );
+        console.log(`${chalk.cyan('Query: ')}${e.query}`);
+        console.log(`${chalk.blue('Params: ')}${e.params}`);
+        console.log(
+          `${chalk.yellow('Duration: ')}${e.duration}ms ${e.duration >= 2 ? chalk.red('Too Lazy') : chalk.green('Good')}`,
+        );
+        result && console.log(`${chalk.cyan('Result:')} ${JSON.stringify(result, null, 2)}`);
+        console.log(chalk.black(chalk.bgCyan(`🎉🎉🎉  DONE! 🎉🎉🎉`)));
+      });
+    };
+    ```
+    서버 콘솔 - 예시(상품목록 더 보기)
+    ```shell
+    🔎🔎🔎  caller: $$ACTION_1 / roll: 상품목록 더 보기 🔎🔎🔎
+    Query: SELECT `carrot_market_reloaded`.`Product`.`id`, `carrot_market_reloaded`.`Product`.`title`, `carrot_market_reloaded`.`Product`.`price`, `carrot_market_reloaded`.`Product`.`created_at`, `carrot_market_reloaded`.`Product`.`photo`, `carrot_market_reloaded`.`Product`.`description` FROM `carrot_market_reloaded`.`Product` WHERE 1=1 ORDER BY `carrot_market_reloaded`.`Product`.`created_at` DESC LIMIT ? OFFSET ?
+    Params: [1,4]
+    Duration: 1ms Good
+    Result: [
+      {
+        "title": "갤럭시 폴드5",
+        "price": 650000,
+        "created_at": "2024-03-26T17:19:42.000Z",
+        "photo": "/images/fold5.jpeg",
+        "description": "갤럭시 폴드5 싸게 팔아요~",
+        "id": 11
+      }
+    ]
+    🎉🎉🎉  DONE! 🎉🎉🎉
+    ```
 
 
 ## #8. Authentication
