@@ -14,10 +14,10 @@ ___
     - `styles`: CSS 모듈 스타일 모음 폴더 [V] 
     - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
     - `services.ts`: `actions.ts`에서 호출되는 로직 계층. 로직 없으면 `repositories.ts`로 건너 뜀 [VM+]
-    - `utils.ts
+    - `utils.ts`
       - 서비스 로직을 제외한 기타 연산 모음
       - 의미 상, 모든 계층에서 공통으로 사용할 성격의 함수들이 위치
-      - 대부분의 공통 유틸은 `lib` 폴더 아래 존재
+      - 대부분의 공통 유틸은 `libs` 폴더 아래 존재
   - 함수가 너무 많아지면, 파일명과 동일 폴더를 생성하고 그 하위에 여러 파일로 구분해 함수를 분류 저장한다.
     - Ex. `services / commandServices.ts, queryServices.ts`
   - CQRS 패턴은 굳이 무리해서 적용하지 않는다.
