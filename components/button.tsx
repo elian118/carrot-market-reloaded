@@ -28,7 +28,7 @@ const Button = ({
   const { pending } = useFormStatus();
 
   return isLoading ?? pending ? (
-    <ArrowPathIcon className="size-12 animate-spin mx-auto dark:text-gray-100" />
+    <ArrowPathIcon className="size-10 animate-spin mx-auto dark:text-gray-100" />
   ) : (
     <button
       type={type}

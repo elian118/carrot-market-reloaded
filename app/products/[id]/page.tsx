@@ -1,9 +1,10 @@
-import { getIsOwner, getProduct, removeProduct } from '@/app/products/[id]/repositories';
+import { getProduct, removeProduct } from '@/app/products/[id]/repositories';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { formatToWon } from '@/libs/utils';
 import Button from '@/components/button';
+import { getIsOwner } from '@/app/products/[id]/utils';
 
 const ProductDetail = async ({ params }: { params: { id: string } }) => {
   const id = Number(params.id);
