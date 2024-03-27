@@ -5,9 +5,12 @@ import Button from '@/components/button';
 import { FormEvent, useState } from 'react';
 import { uploadProduct } from '@/app/(tabs)/products/add/actions';
 import { MB, PLZ_ADD_PHOTO } from '@/libs/constants';
+import { useFormState } from 'react-dom';
+import Input from '@/components/input';
 
 const AddProduct = () => {
   const [preview, setPreview] = useState<string>('');
+  const [state, action] = useFormState(uploadProduct, null);
 
   const isOversizeImage = (file: File): boolean => {
     if (file.size > 2 * MB) {
@@ -39,10 +42,10 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-y-auto mb-24">
       <form
         className="flex flex-col gap-5"
-        action={uploadProduct}
+        action={action}
         onSubmit={(e) => onSubmitData(e)}
       >
         <label
@@ -55,6 +58,7 @@ const AddProduct = () => {
               <PhotoIcon className="w-20 group-hover:text-orange-400" />
               <div className="text-neutral-400 group:hover:text-orange-400 group-hover:text-orange-400">
                 {PLZ_ADD_PHOTO}
+                {state?.fieldErrors.photo}
               </div>
             </>
           )}
@@ -67,16 +71,29 @@ const AddProduct = () => {
           accept="image/*"
           onChange={onImageChange}
         />
-        <input type="text" name="title" placeholder="제목" required />
-        <input
+        <Input
+          type="text"
+          name="title"
+          placeholder="제목"
+          errors={state?.fieldErrors.title}
+          required
+        />
+        <Input
           type="number"
           name="price"
           placeholder="가격"
           min={100}
           step={100}
+          errors={state?.fieldErrors.price}
           required
         />
-        <input type="text" name="description" placeholder="자세한 설명" />
+        <Input
+          type="text"
+          name="description"
+          placeholder="자세한 설명"
+          errors={state?.fieldErrors.description}
+          required
+        />
         <div className="flex gap-2 mx-auto">
           <Button type="submit">작성완료</Button>
           <Button
