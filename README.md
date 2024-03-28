@@ -14,11 +14,12 @@ ___
     - `styles`: CSS 모듈 스타일 모음 폴더 [V] 
     - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
     - `services.ts`: `actions.ts`에서 호출되는 로직 계층. 로직 없으면 `repositories.ts`로 건너 뜀 [VM+]
-      - 서버에서 실행될 함수만 위치 - `'use server'` 적용
+      - 서버 컴포넌트 전용 함수 위치 - `'use server'` 적용
+    - `hooks.ts`
+      - 클라이언트 컴포넌트 전용 함수 위치 - `'use client'` 적용
     - `utils.ts`
       - 서비스 로직을 제외한 기타 연산 모음
       - 의미 상, 모든 계층에서 공통으로 사용할 성격의 함수들이 위치
-        - 클라이언트 컴포넌트에서도 직접 접근이 가능하도록 `'use client'` 적용
       - 대부분의 공통 유틸은 `libs` 폴더 아래 존재
   - 함수가 너무 많아지면, 파일명과 동일 폴더를 생성하고 그 하위에 여러 파일로 구분해 함수를 분류 저장한다.
     - Ex. `services / commandServices.ts, queryServices.ts`
@@ -637,7 +638,7 @@ ___
     
     export default db;
     ```
-    로그 형식을 지정하는 함수는 종단에서 실행될 수 없으므로, `libs/utils.ts` 유틸로 분리
+    로그 형식을 지정하는 함수는 종단에서 실행될 수 없으므로, `libs/hooks.ts` 유틸로 분리
     ```javascript
     export const setQueryLog = (roll: string, caller: string, result?: object | null) => {
       db.$on('query', (e) => {

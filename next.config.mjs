@@ -6,7 +6,7 @@ const nextConfig = {
         hostname: 'avatars.githubusercontent.com',
       },
       {
-        hostname: process.env.CLOUDFLARE_IMAGE_DELIVERY_URL,
+        hostname: process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL,
       }
     ]
   },
