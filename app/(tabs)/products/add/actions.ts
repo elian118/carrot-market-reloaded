@@ -6,7 +6,6 @@ import { getSession } from '@/libs/session';
 import { redirect } from 'next/navigation';
 import { createProduct } from '@/app/(tabs)/products/add/repositories';
 import { FormDataType } from '@/app/(tabs)/products/add/types';
-import { fileUploadInLocal } from '@/app/(tabs)/products/add/services';
 
 const addProduct = async (data: any) => {
   const session = await getSession();
@@ -40,7 +39,8 @@ export const uploadProduct = async (_: any, formData: FormData) => {
   };
   const result = productScheme.safeParse(data);
 
-  await fileUploadInLocal(data);
+  // 로컬 서버로 이미지 파일 업로드
+  // await fileUploadInLocal(data);
 
   if (!result.success) return result.error.flatten();
   else await addProduct(result.data);

@@ -14,9 +14,11 @@ ___
     - `styles`: CSS 모듈 스타일 모음 폴더 [V] 
     - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
     - `services.ts`: `actions.ts`에서 호출되는 로직 계층. 로직 없으면 `repositories.ts`로 건너 뜀 [VM+]
+      - 서버에서 실행될 함수만 위치 - `'use server'` 적용
     - `utils.ts`
       - 서비스 로직을 제외한 기타 연산 모음
       - 의미 상, 모든 계층에서 공통으로 사용할 성격의 함수들이 위치
+        - 클라이언트 컴포넌트에서도 직접 접근이 가능하도록 `'use client'` 적용
       - 대부분의 공통 유틸은 `libs` 폴더 아래 존재
   - 함수가 너무 많아지면, 파일명과 동일 폴더를 생성하고 그 하위에 여러 파일로 구분해 함수를 분류 저장한다.
     - Ex. `services / commandServices.ts, queryServices.ts`
@@ -1074,4 +1076,15 @@ ___
       <form action={function} children=...>
                    ^^^^^^^^^^
         at stringify (<anonymous>)
+    ```
+   
+2. 환경변수<br/><br/>
+    
+    넥스트는 접두어로 `NEXT_PUBLIC_`를 붙이지 않으면 클라이언트 사이드에서 참조할 수 없다.<br/>
+    아래는 넥스트 프로젝트에서 서버와 클라이언트 사이드 모두 참조 가능한 환경변수 네이밍 예시다.<br/><br/>
+    ```dotenv
+    NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID="[환경변수 값]"
+    NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH="[환경변수 값]"
+    NEXT_PUBLIC_CLOUDFLARE_API_KEY="[환경변수 값]"
+    NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL="[환경변수 값]"
     ```

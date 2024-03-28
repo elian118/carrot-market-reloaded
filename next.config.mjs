@@ -4,6 +4,9 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        hostname: process.env.CLOUDFLARE_IMAGE_DELIVERY_URL,
       }
     ]
   },

@@ -22,7 +22,15 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
   return (
     <div>
       <div className="relative aspect-square">
-        <Image fill src={product.photo} alt={product.title} />
+        <Image
+          fill
+          src={
+            product.photo.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
+              ? `${product.photo}/public`
+              : product.photo
+          }
+          alt={product.title}
+        />
       </div>
       <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
         <div className="size-10 rounded-full relative overflow-hidden">
@@ -60,7 +68,7 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
             </form>
           </div>
           <div className="flex gap-2">
-            <Button href="/products">돌아가기</Button>
+            <Button href="/products">목록으로</Button>
             <Button href={`/chat/${id}`}>채팅하기</Button>
           </div>
         </div>

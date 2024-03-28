@@ -22,7 +22,11 @@ const ProductList = ({ title, price, created_at, photo, id }: ProductListProps) 
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
           className="object-cover"
-          src={photo}
+          src={
+            photo.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
+              ? `${photo}/avatar`
+              : photo
+          }
           alt={title}
           // loading="lazy"
         />
