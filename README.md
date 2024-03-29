@@ -11,6 +11,7 @@ ___
       - `services.ts` 또는 `actions.ts`에서 호출
       - 클라이언트 컴포넌트는 훅에서 직접 `repositories.ts` 함수를 호출할 수도 있다.
     - `page.ts`: 화면 [V]. (단, `route.ts`가 있다면 단순 경유 페이지에 불과하므로 해당 파일이 없다.)
+    - `components`: `page.ts` 구성요소를 여러 컴포넌트로 분리한 경우, 자식 컴포넌트가 위치 [V]
     - `styles`: CSS 모듈 스타일 모음 폴더 [V]
     - `schemas.ts`: Zod 등 유효성 검사 스키마 및 타입 위치 [V]
     - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
@@ -1155,7 +1156,7 @@ ___
 
     간단히 말해, 사용자가 특정 페이지로 진입하려는 순간,<br/>
     넥스트가 그 라우팅을 중간에서 가로채 다른 라우트에 있는 페이지를 먼저 보여주는 기능이다.<br/>
-    인스타그램은 이 기능으로 MPA 기반의 모달 UI를 구현했다.<br/><br/>
+    - 인스타그램은 넥스트의 [병렬 라우트](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes)와 [경로 가로채기](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes)로 MPA 기반의 모달 UI를 구현했다.<br/><br/>
 
     간단히, 폴더 이름 앞에 `([가로챌 엡라우트 상대경로])`를 삽입하면 이 기능을 사용할 수 있다.<br/>
     - 가로챌 엡라우트 상대경로`(..)` 지정법은 [넥스트 경로 가로채기 안내](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes) 확인<br/><br/>
@@ -1164,7 +1165,63 @@ ___
     넥스트는 브라우저에서 해당 페이지로 진입했을 때 가로챈 쪽의 인터셉트 페이지를 먼저 보여주고<br/>
     이 인터셉트 페이지에서 새로고침했을 때 마침내 실제 경로의 페이지가 보여지게 된다.<br/><br/>
     
-    ![intercepting_route.png](public%2Fimages%2Fintercepting_route.png)
+    ![intercepting_route.png](public%2Fimages%2Fintercepting_route.png)<br/><br/>
+
+2. 병렬 경로(Parallel Routes)<br/><br/>
+
+    이 기능은 레이아웃 함께 반복될 페이지를 삽입하고 특정 조건에서 해당 페이지를 불러내고자 할 때 유용하다.
+    - [넥스트 병렬 라우트 상세 페이지](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes)<br/><br/>
+
+    병렬 경로를 적용하려면 `layout.tsx`가 위치한 같은 경로에<br/>
+   `@potato`처럼 `@`가 붙은 폴더를 생성하고 그 안에 `page.tsx` 컴포넌트를 추가한다.<br/>
+    그리고 아래처럼 `layout.tsx`에서 가져다 쓰면 된다.<br/><br/>
+
+    ```javascript
+    export default async function RootLayout({
+      children,
+      potato,
+    }: Readonly<{
+      children: React.ReactNode;
+      potato: React.ReactNode;
+    }>) {
+    return (
+        <html lang="en">
+          <body>
+            {potato} // 레이아웃 적용
+            {children}
+          </body>
+        </html>
+      );
+    }
+    ```
+
+    단, 넥스트는 파일기반 라우팅으로 작동하므로,<br/>
+    전항의 사진처럼 현재 사용자가 보는 페이지 `url`과 일치하는 곳에 위치한<br/>
+    `page.tsx`를 발견할 수 있을 때에만 오류 없이 작동한다.<br/><br/>
+
+    따라서, 하위 경로로 접속하면 `layout.tsx`에서 병렬 라우트 컴포넌트를 찾을 수 없어<br/>
+    `해당 페이지를 찾을 수 없다(404)`는 오류가 발생한다.<br/><br/>
+
+    해결법은 병렬 라우팅 위치에 `page.tsx`와 별개로 `default.tsx`도 생성해 정의하는 것이다.<br/>
+    이렇게 하면, 하위 라우트로 접속 시 `layout.tsx`가 찾을 수 없는 `page.tsx` 대신 `default.tsx`를 불러온다.<br/><br/>
+
+    `default.tsx`는 404 오류 방지를 위해 쓰는 것으로, 보통 아래처럼 만든다.<br/><br/>
+    ```javascript
+    const Default = () => {
+      return null;
+    };
+    
+    export default Default;
+    ```
+    만약, 경로 가로채기 도중 데이터 패칭으로 인해 로딩 화면이 겹쳐 보일 수도 있는데,
+    이 경우, 같은 방법으로 `loading.tsx`까지 병렬 경로에 만들면 된다.<br/><br/>
+    ```javascript
+    const Loading = () => {
+      return null;
+    };
+    
+    export default Loading;
+    ```
 
 ## # 주의사항
 ___

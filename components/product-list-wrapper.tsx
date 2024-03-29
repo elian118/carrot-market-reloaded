@@ -33,7 +33,9 @@ const ProductListWrapper = ({ initialProducts }: ProductListWrapperProps) => {
           observer.unobserve(trigger.current);
           setIsLoading(true);
           const newProducts: any[] = await getMoreProducts(page);
-          newProducts.length > 0 ? fetchData(newProducts) : setIsLastPage(true);
+          newProducts && newProducts.length > 0
+            ? fetchData(newProducts)
+            : setIsLastPage(true);
           setIsLoading(false);
         }
       },
