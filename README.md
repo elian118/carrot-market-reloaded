@@ -11,7 +11,8 @@ ___
       - `services.ts` 또는 `actions.ts`에서 호출
       - 클라이언트 컴포넌트는 훅에서 직접 `repositories.ts` 함수를 호출할 수도 있다.
     - `page.ts`: 화면 [V]. (단, `route.ts`가 있다면 단순 경유 페이지에 불과하므로 해당 파일이 없다.)
-    - `styles`: CSS 모듈 스타일 모음 폴더 [V] 
+    - `styles`: CSS 모듈 스타일 모음 폴더 [V]
+    - `schemas.ts`: Zod 등 유효성 검사 스키마 및 타입 위치 [V]
     - `actions.ts`: 사용자 요청에 맞는 서비스를 호출해 화면에 응답하는 계층 [VM]
     - `services.ts`: `actions.ts`에서 호출되는 로직 계층. 로직 없으면 `repositories.ts`로 건너 뜀 [VM+]
       - 서버 컴포넌트 전용 함수 위치 - `'use server'` 적용
@@ -1044,7 +1045,108 @@ ___
       length: 1
     [[Prototype]]: Array(0) 
     ```
+   
+3. 리액트 훅 폼<br/><br/>
+
+    [리액트 훅 폼](https://react-hook-form.com/)은 `form` 유효성 검사를 더 능률적으로 사용하도록 도와주는 모듈이다.<br/><br/>
+
+    예를 들어, `react-dom`의 `usrFormState` 훅보다 더 간단하게 유효성 검사 코드를 작성할 수 있고<br/>
+    인풋 입력값을 실시간 감지해 오류 메시지로 바로 보여주는 기능 등이 있다.<br/><br/>
+
+    사용하려면 아래 두 모듈을 설치한다. 프로덕션 모드에서도 작동해야 하므로, 모두 일반 의존성으로 설치한다.<br/><br/>
+    ```shell
+    yarn add react-hook-form
+    ```
+    ```shell
+    yarn add @hookform/resolvers
+    ```
+    `@hookform/resolvers`는 리액트 훅 폼과 함께 사용하는 유효성 검사 모둘이며,<br/>
+    `zod` 등의 유효성 검사 모듈을 리액트 훅 폼에서 사용할 수 있도록 도와준다.<br/><br/>
+    아래는 `zod` + `react-hook-form` + `@hookform/resolver` 사용 예시
+    ```javascript
+    // schenas.ts
+    import { z } from 'zod';
+    import { INVALID } from '@/libs/constants';
     
+    export const productScheme = z.object({
+    photo: z.string({ required_error: '사진이 필요합니다.' }),
+    title: z
+      .string({ required_error: '제목이 필요합니다.' })
+      .min(10, INVALID.TOO_SHORT)
+      .max(50, INVALID.TOO_LONG),
+    description: z
+      .string({ required_error: '자세한 설명이 필요합니다.' })
+      .min(10, INVALID.TOO_SHORT)
+      .max(300, INVALID.TOO_LONG),
+    price: z.coerce
+      .number({ required_error: '가격이 필요합니다.' })
+      .min(100, '최소 100원 이상이어야 합니다.'),
+    });
+    
+    export type ProductType = z.infer<typeof productScheme>;
+    ```
+    ```javascript
+    // hooks.ts
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<ProductType>({ resolver: zodResolver(productScheme) });
+    ```
+    ```javascript
+    // page.ts
+    const { register } = useAddProduct();
+   
+    <form
+        className="flex flex-col gap-5"
+        action={onValid}
+        onSubmit={(e) => onSubmitData(e)}
+      >
+      <Input
+        type="text"
+        placeholder="제목"
+        errors={[errors.title?.message ?? '']}
+        required
+        {...register('title')}
+      />
+      ...
+    </form>
+    ```
+    리액트 훅 폼은 `input` 요소에만 직접 적용되므로,<br/>
+   `input`을 랩핑한 커스덤 인풋 컴포넌트에 리액트 훅 폼을 적용하려면<br/>
+    반드시 부모를 `forwardRef`로 감싸 자식 인풋에 `ref` 속성을 넘겨줘야 한다.<br/><br/>
+
+    ```javascript
+    import { ForwardedRef, forwardRef, InputHTMLAttributes } from 'react';
+
+    type InputProps = {
+      name: string; // 필수속성화
+      errors?: string[];
+    };
+    
+    const _Input = (
+      { name, errors = [], ...rest }: InputProps & InputHTMLAttributes<HTMLInputElement>,
+      ref: ForwardedRef<HTMLInputElement>, // 추가
+    ) => {
+      return (
+        <div className="flex flex-col gap-2">
+          <input
+            ref={ref}
+            name={name}
+            className="bg-transparent rounded-md w-full h-10 outline-none ring-1 focus:ring-4 transition ring-neutral-200 focus:ring-orange-500 border-none placeholder:text-neutral-400 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed"
+            {...rest}
+          />
+          {errors?.map((err, idx) => (
+            <span key={idx} className="text-red-500 font-medium">
+              {err}
+            </span>
+          ))}
+        </div>
+      );
+    };
+    
+    export default forwardRef(_Input);
+    ```
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.

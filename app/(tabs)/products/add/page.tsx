@@ -3,21 +3,18 @@
 import { ArrowPathIcon, PhotoIcon } from '@heroicons/react/24/solid';
 import Button from '@/components/button';
 import { PLZ_ADD_PHOTO } from '@/libs/constants';
-import { useFormState } from 'react-dom';
 import Input from '@/components/input';
 import { useAddProduct } from '@/app/(tabs)/products/add/hooks';
 
 const AddProduct = () => {
-  const { preview, onImageChange, interceptAction, reset, onSubmitData } =
+  const { preview, onImageChange, reset, onSubmitData, register, onValid, errors } =
     useAddProduct();
-
-  const [state, action] = useFormState(interceptAction, null);
 
   return (
     <div className="p-4 overflow-y-auto mb-24">
       <form
         className="flex flex-col gap-5"
-        action={action}
+        action={onValid}
         onSubmit={(e) => onSubmitData(e)}
       >
         <label
@@ -30,7 +27,7 @@ const AddProduct = () => {
               <PhotoIcon className="w-20 group-hover:text-orange-400" />
               <div className="text-neutral-400 group:hover:text-orange-400 group-hover:text-orange-400">
                 {PLZ_ADD_PHOTO}
-                {state?.fieldErrors.photo}
+                {errors.photo?.message}
               </div>
             </>
           )}
@@ -45,26 +42,26 @@ const AddProduct = () => {
         />
         <Input
           type="text"
-          name="title"
           placeholder="제목"
-          errors={state?.fieldErrors.title}
+          errors={[errors.title?.message ?? '']}
           required
+          {...register('title')}
         />
         <Input
           type="number"
-          name="price"
           placeholder="가격"
           min={100}
           step={100}
-          errors={state?.fieldErrors.price}
+          errors={[errors.price?.message ?? '']}
           required
+          {...register('price')}
         />
         <Input
           type="text"
-          name="description"
           placeholder="자세한 설명"
-          errors={state?.fieldErrors.description}
+          errors={[errors.description?.message ?? '']}
           required
+          {...register('description')}
         />
         <div className="flex gap-2 mx-auto">
           <Button type="submit">작성완료</Button>

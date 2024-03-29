@@ -4,12 +4,22 @@ import { MB, PHOTO_URL, PLZ_ADD_PHOTO } from '@/libs/constants';
 import { FormEvent, useState } from 'react';
 import { getUploadUrl } from '@/app/(tabs)/products/add/services';
 import { uploadProduct } from '@/app/(tabs)/products/add/actions';
-import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { productScheme, ProductType } from '@/app/(tabs)/products/add/schemas';
 
 export const useAddProduct = () => {
   const [preview, setPreview] = useState<string>('');
   const [uploadUrl, setUploadUrl] = useState<string>('');
-  const [photoId, setPhotoId] = useState<string>('');
+  const [file, setFile] = useState<File | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    // setError,
+  } = useForm<ProductType>({ resolver: zodResolver(productScheme) });
 
   const isOversizeImage = (file: File): boolean => {
     if (file.size > 2 * MB) {
@@ -23,19 +33,10 @@ export const useAddProduct = () => {
     const cloudflareForm = new FormData();
     cloudflareForm.append('file', file);
 
-    try {
-      // return await fetch(uploadUrl, {
-      //   method: 'POST',
-      //   body: cloudflareForm,
-      // });
-      return await axios.post(uploadUrl, cloudflareForm, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    return await fetch(uploadUrl, {
+      method: 'POST',
+      body: cloudflareForm,
+    });
   };
 
   const onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,29 +48,40 @@ export const useAddProduct = () => {
     if (isOversizeImage(file)) return; // 파일 용량 체크
     const url = URL.createObjectURL(file); // 브라우저 메모리에 임시 저장된 인풋 업로드 파일을 참조하는 가상 URL 생성
     setPreview(url);
+    setFile(file);
     const { success, result } = await getUploadUrl();
     if (success) {
       const { id, uploadURL } = result!;
       setUploadUrl(uploadURL);
-      setPhotoId(id);
+      setValue('photo', `${PHOTO_URL}/${id}`);
     }
   };
 
-  const interceptAction = async (_: any, formData: FormData) => {
-    const photoUrl = `${PHOTO_URL}/${photoId}`;
-    const file = formData.get('photo');
+  const onSubmit = handleSubmit(async (data: ProductType) => {
     if (!file) return;
 
     // 클라우드플레어로 이미지 업로드
     const res = await fileUploadToCF(file, uploadUrl);
-    if (res?.status !== 200) return;
 
-    // 폼 데이터의 'photo' 값 대체 - zod 유효성 검사 처리를 위한 타입 불일치 해결 [File → string]
-    formData.set('photo', photoUrl);
+    if (res.status !== 200) {
+      if (res.status === 409) alert('중복된 이미지가 존재합니다.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('price', String(data.price));
+    formData.append('description', data.description);
+    formData.append('photo', data.photo);
 
     // 상품 등록 호출
-    return uploadProduct(_, formData);
-  };
+    const errors = await uploadProduct(formData);
+    if (errors) {
+      // zod 에서 이미 모든 필드 오류를 다루고 있으므로, 아래 부가 오류 설정과정 불필요
+      // 오류 재정의 필요 시 사용
+      // setError();
+    }
+  });
 
   const reset = () => setPreview('');
 
@@ -81,11 +93,15 @@ export const useAddProduct = () => {
     }
   };
 
+  const onValid = async () => await onSubmit();
+
   return {
     preview,
     onImageChange,
-    interceptAction,
     reset,
     onSubmitData,
+    register,
+    onValid,
+    errors,
   };
 };
