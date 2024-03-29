@@ -4,7 +4,7 @@ import { ArrowPathIcon, PhotoIcon } from '@heroicons/react/24/solid';
 import Button from '@/components/button';
 import { PLZ_ADD_PHOTO } from '@/libs/constants';
 import Input from '@/components/input';
-import { useAddProduct } from '@/app/(tabs)/products/add/hooks';
+import { useAddProduct } from '@/app/(tabs)/home/add/hooks';
 
 const AddProduct = () => {
   const { preview, onImageChange, reset, onSubmitData, register, onValid, errors } =
@@ -72,7 +72,7 @@ const AddProduct = () => {
           >
             초기화
           </Button>
-          <Button type="button" href="/products">
+          <Button type="button" href="/home">
             돌아가기
           </Button>
         </div>

@@ -68,7 +68,7 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
             </form>
           </div>
           <div className="flex gap-2">
-            <Button href="/products">목록으로</Button>
+            <Button href="/home">목록으로</Button>
             <Button href={`/chat/${id}`}>채팅하기</Button>
           </div>
         </div>

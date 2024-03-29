@@ -16,7 +16,7 @@ import {
 export const tabs = [
   {
     title: '홈',
-    link: '/products',
+    link: '/home',
     icon: <OutlineHomeIcon className="size-7 group-hover:text-orange-600" />,
     selectedIcon: <SolidHomeIcon className="size-7 group-hover:text-orange-600" />,
   },

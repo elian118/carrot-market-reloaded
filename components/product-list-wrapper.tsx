@@ -2,9 +2,9 @@
 
 import ProductList from '@/components/product-list';
 import NoProduct from '@/components/no-product';
-import { InitialProducts } from '@/app/(tabs)/products/types';
+import { InitialProducts } from '@/app/(tabs)/home/types';
 import { useEffect, useRef, useState } from 'react';
-import { getMoreProducts } from '@/app/(tabs)/products/repositories';
+import { getMoreProducts } from '@/app/(tabs)/home/repositories';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 
 type ProductListWrapperProps = {

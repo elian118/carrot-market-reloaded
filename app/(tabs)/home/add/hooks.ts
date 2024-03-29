@@ -2,11 +2,11 @@
 
 import { MB, PHOTO_URL, PLZ_ADD_PHOTO } from '@/libs/constants';
 import { FormEvent, useState } from 'react';
-import { getUploadUrl } from '@/app/(tabs)/products/add/services';
-import { uploadProduct } from '@/app/(tabs)/products/add/actions';
+import { getUploadUrl } from '@/app/(tabs)/home/add/services';
+import { uploadProduct } from '@/app/(tabs)/home/add/actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { productScheme, ProductType } from '@/app/(tabs)/products/add/schemas';
+import { productScheme, ProductType } from '@/app/(tabs)/home/add/schemas';
 
 export const useAddProduct = () => {
   const [preview, setPreview] = useState<string>('');

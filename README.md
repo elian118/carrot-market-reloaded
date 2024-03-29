@@ -1147,12 +1147,31 @@ ___
     
     export default forwardRef(_Input);
     ```
+## # 12. Modal
+___
+1. 경로 가로채기(Intercepting Routes)<br/><br/>
+
+    넥스트는 [경로 가로채기](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes)라는 재미있는 기능을 제공한다.<br/><br/>
+
+    간단히 말해, 사용자가 특정 페이지로 진입하려는 순간,<br/>
+    넥스트가 그 라우팅을 중간에서 가로채 다른 라우트에 있는 페이지를 먼저 보여주는 기능이다.<br/>
+    인스타그램은 이 기능으로 MPA 기반의 모달 UI를 구현했다.<br/><br/>
+
+    간단히, 폴더 이름 앞에 `([가로챌 엡라우트 상대경로])`를 삽입하면 이 기능을 사용할 수 있다.<br/>
+    - 가로챌 엡라우트 상대경로`(..)` 지정법은 [넥스트 경로 가로채기 안내](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes) 확인<br/><br/>
+
+    가로챌 상대경로 이하 폴더 구조(라우트 경로)가 같으면<br/>
+    넥스트는 브라우저에서 해당 페이지로 진입했을 때 가로챈 쪽의 인터셉트 페이지를 먼저 보여주고<br/>
+    이 인터셉트 페이지에서 새로고침했을 때 마침내 실제 경로의 페이지가 보여지게 된다.<br/><br/>
+    
+    ![intercepting_route.png](public%2Fimages%2Fintercepting_route.png)
+
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.
 
     ```javascript
-    import { removeProduct } from '@/app/products/[id]/features';
+    import { removeProduct } from '@/app/home/[id]/features';
     import db from '@/libs/db';
 
     ...

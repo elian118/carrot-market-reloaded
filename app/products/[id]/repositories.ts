@@ -43,5 +43,5 @@ export const removeProduct = async (id: number) => {
   const photoId = result.photo.split('/').slice(-1)[0];
   await delProductImage(photoId);
   setQueryLog('상품 삭제', removeProduct.name, result);
-  redirect('/products');
+  redirect('/home');
 };

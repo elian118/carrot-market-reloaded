@@ -1,6 +1,6 @@
-import { getInitialProducts } from '@/app/(tabs)/products/repositories';
+import { getInitialProducts } from '@/app/(tabs)/home/repositories';
 import ProductListWrapper from '@/components/product-list-wrapper';
-import { InitialProducts } from '@/app/(tabs)/products/types';
+import { InitialProducts } from '@/app/(tabs)/home/types';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import IconButton from '@/components/icon-button';
 

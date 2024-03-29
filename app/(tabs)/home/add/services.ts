@@ -1,7 +1,7 @@
 'use server';
 
 import * as fs from 'fs/promises';
-import { FormDataType, UploadURLRes } from '@/app/(tabs)/products/add/types';
+import { FormDataType, UploadURLRes } from '@/app/(tabs)/home/add/types';
 
 export const fileUploadInLocal = async (data: FormDataType) => {
   // 유효성 검사에서 오류가 발생해도 파일은 올라간다.
