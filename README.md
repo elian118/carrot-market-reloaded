@@ -1370,6 +1370,28 @@ ___
         `fetch()`에 `revalidate: 0`을 적용한 것으로,<br/>
         넥스트 캐시를 응용한 흔한 데이터패칭 방법 중 하나다.<br/><br/>
 
+2. 경로 세그먼트 구성<br/><br/>
+
+    [경로 세그먼트 구성(Route Segment Config
+   )](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)을 사용하면<br/>
+    `page`, `layout`, `route handler` 동작을 다양하게 구성할 수 있다.<br/><br/>
+    ![route_segment_config.png](public%2Fimages%2Froute_segment_config.png)<br/><br/>
+
+    예를 들어, 아래 코드를 전역으로 `page.tsx`에 넣어 `dynamic` 상수를 변경하면<br/>
+    해당 페이지는 새로고침때마다 불완전 캐시 설정 여부와 상관 없이<br/>
+    무조건 캐시를 강제 갱신해 동적페이지처럼 작동시킨다.<br/><br/>
+
+    ```javascript
+    export const dynamic = 'force-dynamic'; // 기본값: 'auto'
+    ```
+    기본 캐시 갱신 방식도 아래처럼 변경 가능하다.<br/>
+    이렇게 하면, 특정 캐시만 변경해야 할 특별한 경우가 아니면<br/>
+    앞에서 설명한 굳이 `1. 불완전 캐시`를 적용할 필요가 없다.<br/><br/>
+
+    ```javascript
+    export const revalidate = 30; // 기본값: 'false'
+    ```
+
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.
