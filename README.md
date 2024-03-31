@@ -1229,35 +1229,123 @@ ___
 1. 불완전 캐시<br/><br/>
 
     넥스트에서 제공하는 [불완전캐시(unstable_cache)](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)는 불필요한 중복 API 호출이나,<br/>
-    무거운 연산을 미리 메모라이즈하기 위해 사용된다.<br/>
+    성능최적화를 위해 무거운 연산을 미리 메모라이즈할 때 사용된다.<br/>
     서버 컴포넌트에서 사용되는 useMemo() 훅이라 보면 된다.<br/><br/>
-
-    ```javascript
-    import { unstable_cache as nextCache } from 'next/cache';
-    // 넥스트 캐시 사용 - unstable_cache(콜백, [전역 키], 갱신주기 옵션)
-    const getCachedProducts = nextCache(getInitialProducts, ['home-products'], {
-        revalidate: 60,
-    });
-
-    export const metadata = {
-      title: '홈',
-    };
-    
-    const Products = async () => {
-      const initialProducts: InitialProducts = await getCachedProducts();
-      ...
-    ```
 
     불완전캐시로 불필요한 연산과 API 호출을 방지할 수 있지만,<br/>
     서버를 재시작하지 않는 한, 실제 데이터 변경이 있음에도 초기 메모라이즈된 값만 가져오게 되므로,<br/>
     데이터패칭 필요 시점에 반드시 캐시를 수동 갱신해야 혼란이 없다.<br/><br/>
 
-    물론, 넥스트 불완전 캐시는 갱신 옵션을 설정할 수 있다.<br/>
-    위 코드에서는 세 번째 인자에 '콜백 최초 실행 후 60초 후 콜백 재실행'되면<br/>
-    캐시를 콜백의 새 반환값으로 갱신한다는 옵션이 붙어 있다.<br/><br/>
+    이에, 넥스트 캐시는 다양한 캐시 갱신 옵션을 제공하고 있다.<br/><br/>
+   
+    1. revalidate 옵션 설정<br/>
+       아래 코드에서는 `unstable_cache()` 세 번째 인자에<br/>
+       '콜백 최초 실행 후 60초 후 콜백 재실행' 시<br/>
+       캐시를 콜백의 새 반환값으로 갱신한다는 옵션이 붙어 있다.<br/><br/>
+   
+        ```javascript
+        import { unstable_cache as nextCache } from 'next/cache';
+        // 넥스트 캐시 사용 - unstable_cache(콜백, [전역 키], 갱신주기 옵션)
+        const getCachedProducts = nextCache(getInitialProducts, ['home-products'], {
+            revalidate: 60,
+        });
+    
+        export const metadata = {
+          title: '홈',
+        };
+        
+        const Products = async () => {
+          const initialProducts: InitialProducts = await getCachedProducts();
+          ...
+        ```
 
-    잦은 캐시 변경은 불완전 캐시 목적을 퇴색시키므로,<br/>
-    적절한 갱신주기 설정으로 균형을 맞춰야 한다.<br/><br/>
+        이 방식은 잦은 캐시 변경 시 불완전 캐시 목적을 퇴색시키므로,<br/>
+        적절한 갱신주기 설정으로 균형을 맞춰야 한다.<br/><br/>
+   
+    2. revalidatePath('경로')<br/><br/>
+   
+        아래는 사용자가 폼 액션으로 `revalidatePath()` 메서드를 사용해 캐시 갱신을 허용하는 방법이다.<br/>
+        이 명령은 특정 페이지의 모든 캐시 갱신을 즉시 실행한다.
+        ```javascript
+        import { revalidatePath, unstable_cache as nextCache } from 'next/cache';
+        
+        const getCachedProducts = nextCache(getInitialProducts, ['home-products']);
+        
+        const Products = async () => {
+          const initialProducts: InitialProducts = await getCachedProducts();
+        
+          const revalidate = async () => {
+            'use server';
+            revalidatePath('/home');
+          };
+        
+          return (
+            <div className="p-5 flex flex-col gap-5">
+              <form action={revalidate}>
+                  <button>Revalidate</button>
+              </form>
+              <ProductListWrapper initialProducts={initialProducts} />
+              ...
+            </div>
+          );
+        };
+        ```
+        그러나 `revalidatePath('경로')`는 캐시 갱신을 허용만 할 뿐,<br/>
+        실제 화면에 보여줄 내용까지 갱신하지 않는다.<br/>
+        즉, 페이지 새로고침까지 해야 실제 변경된 캐시값을 확인할 수 있다.<br/><br/>
+   
+    3. revalidateTag('태그')<br/><br/>
+    
+        이 명령은 여러 캐시를 참조하고 있을 때 특정 캐시만 갱신하려 할 때 유용하다.
+    
+        ```javascript
+        ...
+        import { revalidateTag, unstable_cache as nextCache } from 'next/cache';
+        
+        const getCachedProduct = nextCache(getProduct, ['product-detail'], {
+          tags: ['detail', 'info'], // 캐시 식별자 태그 설정
+        });
+        
+        const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
+          tags: ['title', 'info'], // 캐시 식별자 태그 설정
+        });
+        
+        export const generateMetadata = async ({ params }: { params: { id: string } }) => {
+          const product = await getCachedProductTitle(Number(params.id));
+          return {
+            title: product?.title,
+          };
+        };
+        
+        const ProductDetail = async ({ params }: { params: { id: string } }) => {
+          const id = Number(params.id);
+        
+          const product = await getCachedProduct(id);
+          if (!product) return notFound();
+        
+          const revalidate = async () => {
+            'use server';
+            // revalidateTag('title'); // title 태그 캐시들만 갱신하고자 할 때
+            revalidateTag('info'); // info 태그 캐시들만 갱신하고자 할때
+          };
+        
+          return (
+            ...
+              <div className="p-5">
+                <h1 className="text-2xl font-semibold">{product.title}</h1>
+                <p>{product.description}</p>
+              </div>
+              <form action={revalidate}>
+                {isOwner && (
+                  <Button type="submit" method="delete">
+                    상품명 갱신
+                  </Button>
+                )}
+              </form>
+            );
+            ...
+        };
+        ```
 
 ## # 주의사항
 ___

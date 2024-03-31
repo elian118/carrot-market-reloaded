@@ -22,6 +22,15 @@ export const getProduct = async (id: number) => {
   return result;
 };
 
+export const getProductTitle = async (id: number) => {
+  const result = await db.product.findUnique({
+    where: { id },
+    select: { title: true },
+  });
+  setQueryLog('상품명 조회', getProductTitle.name, result);
+  return result;
+};
+
 const delProductImage = async (imageId: string) => {
   await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/images/v1/${imageId}`,

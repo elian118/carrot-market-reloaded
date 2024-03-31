@@ -1,13 +1,26 @@
-import { getProduct, removeProduct } from '@/app/products/[id]/repositories';
+import {
+  getProduct,
+  getProductTitle,
+  removeProduct,
+} from '@/app/products/[id]/repositories';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { formatToWon } from '@/libs/utils';
 import Button from '@/components/button';
 import { getIsOwner } from '@/app/products/[id]/utils';
+import { unstable_cache as nextCache } from 'next/cache';
+
+const getCachedProduct = nextCache(getProduct, ['product-detail'], {
+  tags: ['detail', 'info'],
+});
+
+const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
+  tags: ['title', 'info'],
+});
 
 export const generateMetadata = async ({ params }: { params: { id: string } }) => {
-  const product = await getProduct(Number(params.id));
+  const product = await getCachedProductTitle(Number(params.id));
   return {
     title: product?.title,
   };
@@ -17,7 +30,7 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
   const id = Number(params.id);
   if (isNaN(id)) return notFound();
 
-  const product = await getProduct(id);
+  const product = await getCachedProduct(id);
   if (!product) return notFound();
   const isOwner = await getIsOwner(product.user_id);
 
@@ -25,6 +38,12 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
     'use server';
     await removeProduct(product.id);
   };
+
+  // const revalidate = async () => {
+  //   'use server';
+  //   // revalidateTag('title'); // title 태그 캐시들만 갱신하고자 할 때
+  //   revalidateTag('info'); // info 태그 캐시들만 갱신하고자 할때
+  // };
 
   return (
     <div>
@@ -73,6 +92,13 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
                 </Button>
               )}
             </form>
+            {/*<form action={revalidate}>*/}
+            {/*  {isOwner && (*/}
+            {/*    <Button type="submit" method="delete">*/}
+            {/*      상품명 갱신*/}
+            {/*    </Button>*/}
+            {/*  )}*/}
+            {/*</form>*/}
           </div>
           <div className="flex gap-2">
             <Button href="/home">목록으로</Button>
