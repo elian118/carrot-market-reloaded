@@ -1296,7 +1296,7 @@ ___
    
     3. revalidateTag('태그')<br/><br/>
     
-        이 명령은 여러 캐시를 참조하고 있을 때 특정 캐시만 갱신하려 할 때 유용하다.
+        `revalidateTag('태그')`는 여러 캐시를 참조하고 있을 때 특정 캐시만 갱신하려 할 때 유용하다.
     
         ```javascript
         ...
@@ -1346,6 +1346,26 @@ ___
             ...
         };
         ```
+    4. fetch cache<br/><br/>
+        
+        `fetch()`는 넥스트 캐시와 연동 가능한 자동캐싱 기능이 있다.<br/>
+        아래는 `fetch()` 함수를 사용해 넥스트 캐시를 설정한 방식이다.<br/><br/>
+        ```javascript
+        const getProduct = () => {
+          fetch('https://api.com', {
+            next: {
+              // revalidate: 60,
+              tags: ['hello', 'info']
+            }    
+          })
+        }
+        ```
+        이렇게 해두면, `revalidateTag('태그')`를 통한 캐시 갱신이 가능하며,<br/>
+        앞서 설명한 그 외 캐시 갱신법 또한 모두 적용 가능하다.<br/><br/>
+   
+        일반적인 DB 업데이트 직후 페이지 데이터패칭도<br/>
+        `fetch()`에 `revalidate: 0`을 적용한 것으로,<br/>
+        넥스트 캐시를 응용한 흔한 데이터패칭 방법 중 하나다.<br/><br/>
 
 ## # 주의사항
 ___
