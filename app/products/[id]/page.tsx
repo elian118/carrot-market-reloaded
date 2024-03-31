@@ -6,6 +6,13 @@ import { formatToWon } from '@/libs/utils';
 import Button from '@/components/button';
 import { getIsOwner } from '@/app/products/[id]/utils';
 
+export const generateMetadata = async ({ params }: { params: { id: string } }) => {
+  const product = await getProduct(Number(params.id));
+  return {
+    title: product?.title,
+  };
+};
+
 const ProductDetail = async ({ params }: { params: { id: string } }) => {
   const id = Number(params.id);
   if (isNaN(id)) return notFound();

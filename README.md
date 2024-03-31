@@ -1213,7 +1213,7 @@ ___
     
     export default Default;
     ```
-    만약, 경로 가로채기 도중 데이터 패칭으로 인해 로딩 화면이 겹쳐 보일 수도 있는데,
+    만약, 경로 가로채기 도중 데이터 패칭으로 인해 로딩 화면이 겹쳐 보일 수도 있는데,<br/>
     이 경우, 같은 방법으로 `loading.tsx`까지 병렬 경로에 만들면 된다.<br/><br/>
     ```javascript
     const Loading = () => {
@@ -1222,6 +1222,42 @@ ___
     
     export default Loading;
     ```
+
+
+## # 13. Caching
+___
+1. 불완전 캐시<br/><br/>
+
+    넥스트에서 제공하는 [불완전캐시(unstable_cache)](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)는 불필요한 중복 API 호출이나,<br/>
+    무거운 연산을 미리 메모라이즈하기 위해 사용된다.<br/>
+    서버 컴포넌트에서 사용되는 useMemo() 훅이라 보면 된다.<br/><br/>
+
+    ```javascript
+    import { unstable_cache as nextCache } from 'next/cache';
+    // 넥스트 캐시 사용 - unstable_cache(콜백, [전역 키], 갱신주기 옵션)
+    const getCachedProducts = nextCache(getInitialProducts, ['home-products'], {
+        revalidate: 60,
+    });
+
+    export const metadata = {
+      title: '홈',
+    };
+    
+    const Products = async () => {
+      const initialProducts: InitialProducts = await getCachedProducts();
+      ...
+    ```
+
+    불완전캐시로 불필요한 연산과 API 호출을 방지할 수 있지만,<br/>
+    서버를 재시작하지 않는 한, 실제 데이터 변경이 있음에도 초기 메모라이즈된 값만 가져오게 되므로,<br/>
+    데이터패칭 필요 시점에 반드시 캐시를 수동 갱신해야 혼란이 없다.<br/><br/>
+
+    물론, 넥스트 불완전 캐시는 갱신 옵션을 설정할 수 있다.<br/>
+    위 코드에서는 세 번째 인자에 '콜백 최초 실행 후 60초 후 콜백 재실행'되면<br/>
+    캐시를 콜백의 새 반환값으로 갱신한다는 옵션이 붙어 있다.<br/><br/>
+
+    잦은 캐시 변경은 불완전 캐시 목적을 퇴색시키므로,<br/>
+    적절한 갱신주기 설정으로 균형을 맞춰야 한다.<br/><br/>
 
 ## # 주의사항
 ___
