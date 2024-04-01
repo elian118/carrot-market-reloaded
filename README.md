@@ -1244,7 +1244,7 @@ ___
     1. revalidate 옵션 설정<br/>
        아래 코드에서는 `unstable_cache()` 세 번째 인자에<br/>
        '콜백 최초 실행 후 60초 후 콜백 재실행' 시<br/>
-       캐시를 콜백의 새 반환값으로 갱신한다는 옵션이 붙어 있다.<br/><br/>
+       캐시를 콜백의 새 반환값으로 갱신한다는 옵션이 붙어 있다.<br/>
    
         ```javascript
         import { unstable_cache as nextCache } from 'next/cache';
@@ -1267,7 +1267,7 @@ ___
    
     2. revalidatePath('경로')<br/><br/>
    
-        아래는 사용자가 폼 액션으로 `revalidatePath()` 메서드를 사용해 캐시 갱신을 허용하는 방법이다.<br/>
+        아래는 사용자가 폼 액션으로 `revalidatePath()` 메서드를 사용해 캐시를 갱신하는 방법이다.<br/>
         이 명령은 특정 페이지의 모든 캐시 갱신을 즉시 실행한다.
         ```javascript
         import { revalidatePath, unstable_cache as nextCache } from 'next/cache';
@@ -1296,6 +1296,8 @@ ___
         그러나 `revalidatePath('경로')`는 캐시 갱신을 허용만 할 뿐,<br/>
         실제 화면에 보여줄 내용까지 갱신하지 않는다.<br/>
         즉, 페이지 새로고침까지 해야 실제 변경된 캐시값을 확인할 수 있다.<br/><br/>
+   
+        작동방식을 볼 때, 경로 가로채기 직후 새로고침을 통해 진입 가능한 페이지에 잘 어울린다.<br/><br/>
    
     3. revalidateTag('태그')<br/><br/>
     
@@ -1352,7 +1354,8 @@ ___
     4. fetch cache<br/><br/>
         
         `fetch()`는 넥스트 캐시와 연동 가능한 자동캐싱 기능이 있다.<br/>
-        아래는 `fetch()` 함수를 사용해 넥스트 캐시를 설정한 방식이다.<br/><br/>
+        아래는 `fetch()` 함수를 사용해 넥스트 캐시를 설정한 방식이다.<br/>
+   
         ```javascript
         const getProduct = () => {
           fetch('https://api.com', {
