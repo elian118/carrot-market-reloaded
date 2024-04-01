@@ -1,5 +1,6 @@
 import {
   getProduct,
+  getProducts,
   getProductTitle,
   removeProduct,
 } from '@/app/products/[id]/repositories';
@@ -8,7 +9,7 @@ import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { formatToWon } from '@/libs/utils';
 import Button from '@/components/button';
-import { getIsOwner } from '@/app/products/[id]/utils';
+import { getIsOwner } from '@/app/products/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
 
 const getCachedProduct = nextCache(getProduct, ['product-detail'], {
@@ -111,3 +112,8 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
 };
 
 export default ProductDetail;
+
+export const generateStaticParams = async () => {
+  const products = await getProducts();
+  return products.map((product) => ({ id: String(product.id) }));
+};

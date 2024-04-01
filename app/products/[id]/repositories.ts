@@ -31,6 +31,14 @@ export const getProductTitle = async (id: number) => {
   return result;
 };
 
+export const getProducts = async () => {
+  const result = await db.product.findMany({
+    select: { id: true },
+  });
+  setQueryLog('상품목록(아이디) 조회', getProducts.name, result);
+  return result;
+};
+
 const delProductImage = async (imageId: string) => {
   await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID}/images/v1/${imageId}`,

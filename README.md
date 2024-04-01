@@ -19,7 +19,7 @@ ___
       - 서버 컴포넌트 전용 함수 위치 - `'use server'` 적용
     - `hooks.ts`
       - 클라이언트 컴포넌트 전용 함수 위치 - `'use client'` 적용
-    - `utils.ts`
+    - `services.ts`
       - 서비스 로직을 제외한 기타 연산 모음
       - 의미 상, 모든 계층에서 공통으로 사용할 성격의 함수들이 위치
       - 대부분의 공통 유틸은 `libs` 폴더 아래 존재
@@ -1394,6 +1394,42 @@ ___
     ```javascript
     export const revalidate = 30; // 기본값: 'false'
     ```
+   
+3. 동적 파라미터
+
+    `yarn build` 명령을 사용하면, 넥스트가 각 페이지를 어떤 유형으로 빌드하는지 확인할 수 있다.<br/>
+    ![yarn_build.png](public%2Fimages%2Fyarn_build.png)<br/><br/>
+
+    맨 아래 3줄만 보면, 이런 뜻이다.<br/><br/>
+    - ○  (정적)   정적페이지로 사전 렌더됨
+    - ●  (SSG)   `getStaticProps`를 사용해 정적 `HTML`로 사전 렌더됨
+    - λ  (동적)   `Node.js`를 사용해 서버에서 렌더됨<br/><br/>
+
+    이 중에서 `SSG`는 지정한 정적 파라미터가 실제 있다고 가정하고<br/>
+    해당 파라미터에 대응하는 모든 페이지를 정적 페이지로 만든 것이다.<br/>
+    ```shell
+    ├ ● /products/[id]                       1.07 kB        97.2 kB
+    ├ /products/1
+    ├ /products/10
+    ├ /products/11
+    └ [+4 more paths]
+    ```
+    그리고 위 빌드는 `page.tsx`에 추가된 아래 정적 파라미터 생성 함수에 의해 실행됐다.
+    ```javascript
+    export const generateStaticParams = async () => {
+      const products = await getProducts(); // DB 조회 => 상품 id 목록 반환
+      return products.map((product) => ({ id: String(product.id) })); // ['1', '10', '11', ...]
+    };
+    ```
+    이렇게 하면, 페이지 진입마다 일일이 DB에 접촉하고 그때마다 서버사이드 렌더링할 필요 없이<br/>
+    .next 폴더 안에 미리 `yarn build` 명령으로 만들어진 정적페이지를 가져다 쓸 수 있게 된다.<br/><br/>
+
+    미리 만들어진 정적 페이지를 바로 가져다 쓸 수 있다면,<br/>
+    서버사이드 렌더링을 위해 사용자가 기다릴 필요도 없게 되고<br/>
+    굳이 스켈레톤 디자인 같은 로딩화면을 보여줄 필요도 없게 된다는 뜻이다.<br/><br/>
+
+    대신 이 방식은 HTML을 저장할 서버 공간이 그만큼 많이 필요하고<br/>
+    주기적으로 기존 캐시를 갱신하는 코드가 같은 `page.tsx` 안에 있어야 한다.<br/><br/>
 
 ## # 주의사항
 ___
