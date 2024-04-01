@@ -1,17 +1,22 @@
 'use client';
 
-import { MB, PHOTO_URL, PLZ_ADD_PHOTO } from '@/libs/constants';
 import { FormEvent, useState } from 'react';
-import { getUploadUrl } from '@/app/(tabs)/home/add/services';
-import { uploadProduct } from '@/app/(tabs)/home/add/actions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { productScheme, ProductType } from '@/app/(tabs)/home/add/schemas';
+import { MB, PHOTO_URL, PLZ_ADD_PHOTO } from '@/libs/constants';
+import { ProductType, productScheme } from '@/common/schemas';
+import { setProductInfo } from '@/common/actions';
+import { useParams } from 'next/navigation';
+import { InitialProduct } from '@/common/types';
+import { getUploadUrl } from '@/common/services';
 
-export const useAddProduct = () => {
+export const useProduct = () => {
   const [preview, setPreview] = useState<string>('');
   const [uploadUrl, setUploadUrl] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+
+  const params = useParams();
+  const productId = params.id ? Number(params.id) : undefined;
 
   const {
     register,
@@ -57,9 +62,7 @@ export const useAddProduct = () => {
     }
   };
 
-  const onSubmit = handleSubmit(async (data: ProductType) => {
-    if (!file) return;
-
+  const updateImage = async (file: File) => {
     // 클라우드플레어로 이미지 업로드
     const res = await fileUploadToCF(file, uploadUrl);
 
@@ -67,6 +70,15 @@ export const useAddProduct = () => {
       if (res.status === 409) alert('중복된 이미지가 존재합니다.');
       return;
     }
+  };
+
+  const onSubmit = handleSubmit(async (data: ProductType) => {
+    // 등록일 때
+    if (!params.id) {
+      if (!file) return;
+      await updateImage(file);
+      // 수정일 때
+    } else if (preview && file) await updateImage(file);
 
     const formData = new FormData();
     formData.append('title', data.title);
@@ -74,8 +86,8 @@ export const useAddProduct = () => {
     formData.append('description', data.description);
     formData.append('photo', data.photo);
 
-    // 상품 등록 호출
-    const errors = await uploadProduct(formData);
+    // 상품 등록/수정 호출
+    const errors = await setProductInfo(formData, productId);
     if (errors) {
       // zod 에서 이미 모든 필드 오류를 다루고 있으므로, 아래 부가 오류 설정과정 불필요
       // 오류 재정의 필요 시 사용
@@ -95,7 +107,18 @@ export const useAddProduct = () => {
 
   const onValid = async () => await onSubmit();
 
+  const init = (product: InitialProduct) => {
+    if (product) {
+      setPreview(product.photo);
+      setValue('photo', product.photo);
+      setValue('title', product.title);
+      setValue('price', product.price);
+      setValue('description', product.description);
+    }
+  };
+
   return {
+    init,
     preview,
     onImageChange,
     reset,

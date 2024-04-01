@@ -34,3 +34,11 @@ export const setQueryLog = (roll: string, caller: string, result?: object | null
     });
   }
 };
+
+export const parsePhotoUrl = (
+  photoUrl: string,
+  format: 'public' | 'avatar' = 'public',
+) =>
+  photoUrl.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
+    ? `${photoUrl}/${format}`
+    : photoUrl;

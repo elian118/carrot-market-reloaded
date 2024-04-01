@@ -1,6 +1,6 @@
 import SkeletonBoxes from '@/components/skeleton-boxes';
 
-export const Loading = () => {
+const Loading = () => {
   return (
     <div className="p-5 animate-pulse flex flex-col gap-5">
       {[...Array(10)].map((_, idx) => (
@@ -9,3 +9,5 @@ export const Loading = () => {
     </div>
   );
 };
+
+export default Loading;

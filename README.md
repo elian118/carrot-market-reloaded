@@ -1307,11 +1307,11 @@ ___
         ...
         import { revalidateTag, unstable_cache as nextCache } from 'next/cache';
         
-        const getCachedProduct = nextCache(getProduct, ['product-detail'], {
+        const getCachedProduct = nextCache(getProduct, ['products-detail'], {
           tags: ['detail', 'info'], // 캐시 식별자 태그 설정
         });
         
-        const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
+        const getCachedProductTitle = nextCache(getProductTitle, ['products-title'], {
           tags: ['title', 'info'], // 캐시 식별자 태그 설정
         });
         
@@ -1456,13 +1456,13 @@ ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.
 
     ```javascript
-    import { removeProduct } from '@/app/home/[id]/features';
+    import { delProduct } from '@/app/home/[id]/features';
     import db from '@/libs/db';
 
     ...
     const delProduct = async () => {
       'use server';
-      await removeProduct(product.id);
+      await delProduct(product.id);
     };
 
     return (

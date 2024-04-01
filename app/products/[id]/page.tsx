@@ -1,27 +1,18 @@
-import {
-  getProduct,
-  getProducts,
-  getProductTitle,
-  removeProduct,
-} from '@/app/products/[id]/repositories';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
-import { formatToWon } from '@/libs/utils';
+import { formatToWon, parsePhotoUrl } from '@/libs/utils';
 import Button from '@/components/button';
-import { getIsOwner } from '@/app/products/[id]/services';
+import { getIsOwner, removeProduct } from '@/app/products/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
+import { getProduct, getProducts } from '@/common/repositories';
 
-const getCachedProduct = nextCache(getProduct, ['product-detail'], {
+const getCachedProduct = nextCache(getProduct, ['products-detail'], {
   tags: ['detail', 'info'],
 });
 
-const getCachedProductTitle = nextCache(getProductTitle, ['product-title'], {
-  tags: ['title', 'info'],
-});
-
 export const generateMetadata = async ({ params }: { params: { id: string } }) => {
-  const product = await getCachedProductTitle(Number(params.id));
+  const product = params.id ? await getCachedProduct(Number(params.id)) : null;
   return {
     title: product?.title,
   };
@@ -40,24 +31,10 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
     await removeProduct(product.id);
   };
 
-  // const revalidate = async () => {
-  //   'use server';
-  //   // revalidateTag('title'); // title 태그 캐시들만 갱신하고자 할 때
-  //   revalidateTag('info'); // info 태그 캐시들만 갱신하고자 할때
-  // };
-
   return (
     <div>
       <div className="relative aspect-square">
-        <Image
-          fill
-          src={
-            product.photo.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
-              ? `${product.photo}/public`
-              : product.photo
-          }
-          alt={product.title}
-        />
+        <Image fill src={parsePhotoUrl(product.photo)} alt={product.title} />
       </div>
       <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
         <div className="size-10 rounded-full relative overflow-hidden">
@@ -93,13 +70,6 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
                 </Button>
               )}
             </form>
-            {/*<form action={revalidate}>*/}
-            {/*  {isOwner && (*/}
-            {/*    <Button type="submit" method="delete">*/}
-            {/*      상품명 갱신*/}
-            {/*    </Button>*/}
-            {/*  )}*/}
-            {/*</form>*/}
           </div>
           <div className="flex gap-2">
             <Button href="/home">목록으로</Button>

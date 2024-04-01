@@ -11,7 +11,7 @@ export const CloseBtn = () => {
   };
 
   return (
-    <div className="absolute right-5 top-5 text-neutral-200">
+    <div>
       <button onClick={onClickClose}>
         <XMarkIcon className="size-10" />
       </button>

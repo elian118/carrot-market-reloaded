@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ProductProps } from '@/app/(tabs)/home/@modal/(...)products/[id]/types';
+import { parsePhotoUrl } from '@/libs/utils';
 
 export const ProductImage = ({ product }: ProductProps) => {
   return (
@@ -8,11 +9,7 @@ export const ProductImage = ({ product }: ProductProps) => {
         className="aspect-square object-cover rounded-md"
         width={700}
         height={700}
-        src={
-          product.photo.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
-            ? `${product.photo}/public`
-            : product.photo
-        }
+        src={parsePhotoUrl(product.photo)}
         alt={product.title}
       />
     )

@@ -2,9 +2,9 @@
 
 import { getSession } from '@/libs/session';
 import { redirect } from 'next/navigation';
-import { createProduct } from '@/app/(tabs)/home/add/repositories';
-import { FormDataType } from '@/app/(tabs)/home/add/types';
-import { productScheme } from '@/app/(tabs)/home/add/schemas';
+import { productScheme } from '@/common/schemas/productScheme';
+import { createProduct } from '@/common/repositories';
+import { FormDataType } from '@/common/types';
 
 const addProduct = async (data: any) => {
   const session = await getSession();

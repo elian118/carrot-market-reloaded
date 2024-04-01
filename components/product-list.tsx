@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatToTimeAgo, formatToWon } from '@/libs/utils';
+import { formatToTimeAgo, formatToWon, parsePhotoUrl } from '@/libs/utils';
 
 type ProductListProps = {
   title: string;
@@ -22,11 +22,7 @@ const ProductList = ({ title, price, created_at, photo, id }: ProductListProps) 
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
           className="object-cover"
-          src={
-            photo.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
-              ? `${photo}/avatar`
-              : photo
-          }
+          src={parsePhotoUrl(photo, 'avatar')}
           alt={title}
           // loading="lazy"
         />

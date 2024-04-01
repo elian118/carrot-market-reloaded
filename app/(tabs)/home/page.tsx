@@ -8,7 +8,7 @@ export const metadata = {
   title: '홈',
 };
 
-export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 const Products = async () => {
   const initialProducts: InitialProducts = await getInitialProducts();
@@ -17,7 +17,7 @@ const Products = async () => {
     <div className="p-5 flex flex-col gap-5">
       <ProductListWrapper initialProducts={initialProducts} />
       <div className="fixed bottom-24 right-8">
-        <IconButton icon={<PlusIcon className="size-10" />} href="/products/add" />
+        <IconButton icon={<PlusIcon className="size-10" />} href="/home/add" />
       </div>
     </div>
   );
