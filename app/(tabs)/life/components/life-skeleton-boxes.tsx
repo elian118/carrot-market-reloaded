@@ -1,5 +1,3 @@
-import React from 'react';
-
 const LifeSkeletonBoxes = () => {
   return (
     <div className="*:rounded-md flex gap-5">

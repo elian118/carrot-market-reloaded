@@ -21,6 +21,11 @@ export const getUser = async () => {
   return user ? user : notFound(); // 확인된 사용자 정보 없다면 404 처리
 };
 
+export const getSessionId = async () => {
+  const session = await getSession(); // 복호화 된 쿠키 반환
+  return session.id;
+};
+
 // 로그인 - 사용자 정보를 암호화 후 쿠키에 저장
 export const saveLoginSession = async (user: SessionContent) => {
   const session = await getSession();
