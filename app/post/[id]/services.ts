@@ -1,7 +1,7 @@
 'use server';
 
-import { createLike, delLike, getLike } from '@/app/post/[id]/repositories';
-import { revalidatePath } from 'next/cache';
+import { createLike, delLike, getLike, getLikeCount } from '@/app/post/[id]/repositories';
+import { revalidateTag } from 'next/cache';
 import { getSessionId } from '@/libs/session';
 
 export const getIsLiked = async (postId: number) => {
@@ -15,7 +15,7 @@ export const likePost = async (formData: FormData) => {
     const id = formData.get('postId');
     const sessionId = await getSessionId();
     await createLike(Number(id), sessionId!);
-    revalidatePath(`/post/${id}`);
+    revalidateTag(`like-status-${id}`);
   } catch (e) {}
 };
 
@@ -24,6 +24,16 @@ export const dislikePost = async (formData: FormData) => {
     const id = formData.get('postId');
     const sessionId = await getSessionId();
     await delLike(Number(id), sessionId!);
-    revalidatePath(`/post/${id}`);
+    revalidateTag(`like-status-${id}`);
   } catch (e) {}
+};
+
+export const getLikeStatus = async (id: number) => {
+  const isLiked = await getIsLiked(Number(id));
+  const likeCount = await getLikeCount(Number(id));
+
+  return {
+    likeCount,
+    isLiked: isLiked,
+  };
 };

@@ -24,7 +24,6 @@ export const getPost = async (id: number) => {
         },
         _count: {
           select: {
-            likes: true,
             comments: true,
           },
         },
@@ -70,4 +69,14 @@ export const delLike = async (id: number, sessionId: number) => {
     },
   });
   setQueryLog('싫어요', 'dislikePost', result);
+};
+
+export const getLikeCount = async (postId: number) => {
+  const likeCounts = await db.like.count({
+    where: {
+      post_id: postId,
+    },
+  });
+  setQueryLog('좋아요 수 조회', 'getLikeCount', likeCounts);
+  return likeCounts;
 };

@@ -17,7 +17,11 @@ export const formatToWon = (price: number): string =>
   // `₩ ${number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   `₩ ${price.toLocaleString('ko-KR')}`;
 
-export const setQueryLog = (roll: string, caller: string, result?: object | null) => {
+export const setQueryLog = (
+  roll: string,
+  caller: string,
+  result?: object | number | string | null,
+) => {
   if (process.env.NODE_ENV !== 'production') {
     db.$on('query', (e) => {
       // SQL 키워드 자동 개행 및 색상 부여
