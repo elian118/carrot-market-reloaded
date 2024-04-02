@@ -10,21 +10,21 @@ export const getIsLiked = async (postId: number) => {
   return Boolean(like);
 };
 
-export const likePost = async (formData: FormData) => {
+export const likePost = async (postId: number) => {
+  // await new Promise((r) => setTimeout(r, 5000));
   try {
-    const id = formData.get('postId');
     const sessionId = await getSessionId();
-    await createLike(Number(id), sessionId!);
-    revalidateTag(`like-status-${id}`);
+    await createLike(Number(postId), sessionId!);
+    revalidateTag(`like-status-${postId}`);
   } catch (e) {}
 };
 
-export const dislikePost = async (formData: FormData) => {
+export const dislikePost = async (postId: number) => {
+  // await new Promise((r) => setTimeout(r, 5000));
   try {
-    const id = formData.get('postId');
     const sessionId = await getSessionId();
-    await delLike(Number(id), sessionId!);
-    revalidateTag(`like-status-${id}`);
+    await delLike(Number(postId), sessionId!);
+    revalidateTag(`like-status-${postId}`);
   } catch (e) {}
 };
 

@@ -1477,6 +1477,92 @@ ___
     오직, 기존에 사전 렌더된 정적 페이지들만 넥스트에서 쓰게 되므로,<br/>
     신규 데이터에 대응하는 페이지로 진입할 때 404 에러가 뜨게 된다.<br/><br/>
 
+
+## # 14. Optimistic Updates
+___
+
+1. 서버 컴포넌트 액션<br/><br/>
+
+    서버 컴포넌트는 사용자가 `form` 요소를 통해 POST 요청을 전달한다.<br/>
+    여기서는 `form action`으로 서비스 계층 함수를 주로 사용하는데,<br/>
+    서버 컴포넌트 변수는 서비스 함수의 인자로 넣어 전달할 수 없고, 강제 실행 시 오류가 발생한다.<br/><br/>
+
+    대신 아래와 같이 `formData`를 활용한 고전적인 방법으로 값을 전달할 수 있다.<br/>
+
+    ```javascript
+    <form method='POST'>
+      <input type='hidden' type="postId" value={Number(id)} />
+      <button>
+        {state.isLiked ? (
+          <HandThumbUpIcon className="size-5" />
+        ) : (
+          <OutlinedHandThumbUpIcon className="size-5" />
+        )}
+        {state.isLiked ? (
+          <span> {state.likeCount}</span>
+        ) : (
+          <span>공감하기 ({state.likeCount})</span>
+        )}
+      </button>
+    </form>
+    ```
+    ```javascript
+    export const likePost = async (formData: FormData) => {
+      try {
+        const postId = formData.get('postId');
+        const sessionId = await getSessionId();
+        await createLike(Number(postId), sessionId!);
+        revalidateTag(`like-status-${postId}`);
+      } catch (e) {}
+    };
+    ```
+    요청 처리 후 화면 갱신은 이전 섹터의 넥스트 캐시를 활용한 방식대로 변경해줘야 한다.<br/><br/>
+
+    또, 화면 요소가 `form action`을 통해 일괄 변경되는 게 아니라, 일부 요소만 별개로 갱신되는 성격이라면,<br/>
+    앞서 설명한 넥스트 캐시의 `revalidateTag` 를 사용해 캐시를 분리함으로써<br/>
+    어느 한 요청이 다른 화면 요소에 영향이 가지 않도록 해야 한다.<br/><br/>
+
+2. 클라이언트 컴포넌트 - `useOptimistic`<br/><br/>
+
+    클라이언트 컴포넌트는 훅을 사용해 사용자 요청처리와 상태관리를 한다.<br/>
+    따라서, `form` 대신 버튼의 `onClick` 이벤트 핸들러를 더 많이 활용한다.<br/><br/>
+
+    특히, 리액트에서는 비동기처리와 관련해 [useOptimistic](https://ko.react.dev/reference/react/useOptimistic)이라는 실험적 훅을 제공하고 있다.<br/>
+    `useOptimistic`을 사용하면 비동기 요청 처리 도중 `pending`이 걸렸을 때<br/>
+    먼저 지정된 초기값을 대신 넣어 랜더하고, 나중에 요청이 완료되면 다시 실제 상태를 반영해 랜더할 수 있다.
+    
+    ```javascript
+    const onClick = async () => {
+      reducer(undefined);
+      isLiked ? await dislikePost(postId) : await likePost(postId);
+    };
+    ...
+
+    <button onClick={onClick}>
+      {state.isLiked ? (
+        <HandThumbUpIcon className="size-5" />
+      ) : (
+        <OutlinedHandThumbUpIcon className="size-5" />
+      )}
+      {state.isLiked ? (
+        <span> {state.likeCount}</span>
+      ) : (
+        <span>공감하기 ({state.likeCount})</span>
+      )}
+    </button>
+    ```
+    ```javascript
+    export const likePost = async (postId: number) => {
+      await new Promise((r) => setTimeout(r, 5000)); // pending test
+      try {
+        const sessionId = await getSessionId();
+        await createLike(Number(postId), sessionId!);
+        revalidateTag(`like-status-${postId}`);
+      } catch (e) {}
+    };
+    ```
+    
+
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.

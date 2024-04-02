@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import { getPost } from '@/app/post/[id]/repositories';
 import Image from 'next/image';
-import { EyeIcon, HandThumbUpIcon } from '@heroicons/react/24/solid';
-import { HandThumbUpIcon as OutlinedHandThumbUpIcon } from '@heroicons/react/24/outline';
-import { dislikePost, getLikeStatus, likePost } from '@/app/post/[id]/services';
+import { EyeIcon } from '@heroicons/react/24/solid';
+import { getLikeStatus } from '@/app/post/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
 import { formatToTimeAgo } from '@/libs/utils';
+import { LikeButton } from '@/app/post/[id]/components';
 
 const PostDetail = async ({ params }: { params: { id: string } }) => {
   const id = Number(params.id);
@@ -53,19 +53,7 @@ const PostDetail = async ({ params }: { params: { id: string } }) => {
           <EyeIcon className="size-5" />
           <span>조회 {post.views}</span>
         </div>
-        <form action={isLiked ? dislikePost : likePost} method="POST">
-          <input type="hidden" name="postId" value={id} />
-          <button
-            className={`flex items-center gap-2 text-neutral-400 text-sm border border-neutral-400 rounded-full p-2 ${isLiked ? 'bg-orange-500 text-white border-orange-500' : 'hover:bg-neutral-800'}`}
-          >
-            {isLiked ? (
-              <HandThumbUpIcon className="size-5" />
-            ) : (
-              <OutlinedHandThumbUpIcon className="size-5" />
-            )}
-            {isLiked ? <span> {likeCount}</span> : <span>공감하기 ({likeCount})</span>}
-          </button>
-        </form>
+        <LikeButton isLiked={isLiked} likeCount={likeCount} postId={id} />
       </div>
     </div>
   );
