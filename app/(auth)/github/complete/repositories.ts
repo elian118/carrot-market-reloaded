@@ -13,7 +13,7 @@ export const createGitHubUser = async (profile: any, email: string | null) => {
     },
     select: { id: true },
   });
-  setQueryLog('깃허브 회원 가입 / 계정 생성', createGitHubUser.name, result);
+  setQueryLog('깃허브 회원 가입 / 계정 생성', 'createGitHubUser', result);
   return result;
 };
 
@@ -22,6 +22,6 @@ export const getGitHubUser = async (profileId: number) => {
     where: { github_id: String(profileId) },
     select: { id: true },
   });
-  setQueryLog('깃허브 회원 조회', getGitHubUser.name, result);
+  setQueryLog('깃허브 회원 조회', 'getGitHubUser', result);
   return result;
 };

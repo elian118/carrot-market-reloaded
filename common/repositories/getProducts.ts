@@ -5,6 +5,6 @@ export const getProducts = async () => {
   const result = await db.product.findMany({
     select: { id: true },
   });
-  setQueryLog('상품목록(아이디) 조회', getProducts.name, result);
+  setQueryLog('상품목록(아이디) 조회', 'getProducts', result);
   return result;
 };

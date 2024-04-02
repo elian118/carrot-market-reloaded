@@ -6,6 +6,6 @@ export const delProduct = async (id: number) => {
     where: { id: id },
     select: { id: true, photo: true },
   });
-  setQueryLog('상품 삭제', delProduct.name, result);
+  setQueryLog('상품 삭제', 'delProduct', result);
   return result;
 };

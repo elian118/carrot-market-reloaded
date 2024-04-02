@@ -14,6 +14,6 @@ export const createProduct = async (data: any, sessionId: number) => {
     },
     select: { id: true },
   });
-  setQueryLog('상품 등록', createProduct.name, result);
+  setQueryLog('상품 등록', 'createProduct', result);
   return result;
 };

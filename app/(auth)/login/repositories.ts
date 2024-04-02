@@ -6,6 +6,6 @@ export const getUserWithEmail = async (email: string) => {
     where: { email },
     select: { id: true, password: true },
   });
-  setQueryLog('이메일 회원 조회', getUserWithEmail.name, result);
+  setQueryLog('이메일 회원 조회', 'getUserWithEmail', result);
   return result;
 };

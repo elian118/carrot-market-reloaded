@@ -13,6 +13,6 @@ export const getProduct = async (id: number) => {
       },
     },
   });
-  setQueryLog('상품 상세정보 조회', getProduct.name, result);
+  setQueryLog('상품 상세정보 조회', 'getProduct', result);
   return result;
 };

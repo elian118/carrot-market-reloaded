@@ -12,6 +12,6 @@ export const updateProduct = async (data: any, id: number) => {
     where: { id },
     select: { id: true },
   });
-  setQueryLog('상품정보 수정', updateProduct.name, result);
+  setQueryLog('상품정보 수정', 'updateProduct', result);
   return result;
 };

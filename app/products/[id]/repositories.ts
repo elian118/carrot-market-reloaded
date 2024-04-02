@@ -9,6 +9,6 @@ export const getProductTitle = async (id: number) => {
     where: { id },
     select: { title: true },
   });
-  setQueryLog('상품명 조회', getProductTitle.name, result);
+  setQueryLog('상품명 조회', 'getProductTitle', result);
   return result;
 };

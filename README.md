@@ -439,7 +439,7 @@ ___
 ___
 
 1. 개념<br/>
-    [프리즈마](https://www.prisma.io/)는 대중적인 노드 기반 ORM 중 하나다.<br/>
+    [프리즈마](https://www.prisma.io/)는 대중적인 타입스크립트 지원 ORM 중 하나다.<br/>
     프리즈마 설치 전에 기본적인 DB 개발 환경은 갖춰두도록 하자. 설치 명령은 아래와 같다.
     ```shell
     yarn add prisma
@@ -579,13 +579,13 @@ ___
     ```javascript
     export const getMoreProducts = async (page: number) => {
       return db.product.findMany({
-        select: {
-        title: true,
-        price: true,
-        created_at: true,
-        photo: true,
-        description: true,
-        id: true,
+          select: {
+          title: true,
+          price: true,
+          created_at: true,
+          photo: true,
+          description: true,
+          id: true,
         },
         skip: page,
         take: CONTENT_PER_PAGE,
@@ -644,36 +644,62 @@ ___
     ```javascript
     export const setQueryLog = (roll: string, caller: string, result?: object | null) => {
       db.$on('query', (e) => {
-        console.log(
-          chalk.black(chalk.bgCyan(`🔎🔎🔎  caller: ${caller} / roll: ${roll} 🔎🔎🔎`)),
-        );
-        console.log(`${chalk.cyan('Query: ')}${e.query}`);
+        // SQL 키워드 자동 개행 및 색상 부여
+        const query = e.query
+          .toString()
+          .replace(
+            /(SELECT|UPDATE|DELETE|FROM|JOIN ON|WHERE|GROUP BY|HAVING|ORDER BY|LIMIT|OFFSET)\b/g,
+            '\n\x1b[35m$1\x1b[0m',
+          )
+          .replace(/(DESC|ASC)\b/g, '\x1b[35m$1\x1b[0m')
+          .replace(/,/g, '\n')
+          .replaceAll('`', '');
+
+        console.log(chalk.black(chalk.bgCyan(` ❖ caller: ${caller} `)));
+        console.log(chalk.black(chalk.bgCyan(` ❖ roll: ${roll} `)));
+        console.log(`${chalk.cyan('Query: ')}${query}`);
         console.log(`${chalk.blue('Params: ')}${e.params}`);
         console.log(
           `${chalk.yellow('Duration: ')}${e.duration}ms ${e.duration >= 2 ? chalk.red('Too Lazy') : chalk.green('Good')}`,
         );
-        result && console.log(`${chalk.cyan('Result:')} ${JSON.stringify(result, null, 2)}`);
-        console.log(chalk.black(chalk.bgCyan(`🎉🎉🎉  DONE! 🎉🎉🎉`)));
+        result && console.log(`${chalk.cyan('Result:')}`);
+        result && console.log(result);
+        console.log(chalk.black(chalk.bgCyan(` ❖ DONE! ❖ `)));
       });
     };
     ```
     서버 콘솔 - 예시(상품목록 더 보기)
     ```shell
-    🔎🔎🔎  caller: $$ACTION_1 / roll: 상품목록 더 보기 🔎🔎🔎
-    Query: SELECT `carrot_market_reloaded`.`Product`.`id`, `carrot_market_reloaded`.`Product`.`title`, `carrot_market_reloaded`.`Product`.`price`, `carrot_market_reloaded`.`Product`.`created_at`, `carrot_market_reloaded`.`Product`.`photo`, `carrot_market_reloaded`.`Product`.`description` FROM `carrot_market_reloaded`.`Product` WHERE 1=1 ORDER BY `carrot_market_reloaded`.`Product`.`created_at` DESC LIMIT ? OFFSET ?
-    Params: [1,4]
-    Duration: 1ms Good
-    Result: [
+     ❖ caller: getPosts 
+     ❖ roll: 동네생활 포스트 목록 조회
+    Query:
+    SELECT carrot_market_reloaded.User.id
+     carrot_market_reloaded.User.username
+     carrot_market_reloaded.User.email
+     carrot_market_reloaded.User.password
+     carrot_market_reloaded.User.phone
+     carrot_market_reloaded.User.github_id
+     carrot_market_reloaded.User.avatar
+     carrot_market_reloaded.User.created_at
+     carrot_market_reloaded.User.updated_at
+    FROM carrot_market_reloaded.User
+    WHERE (carrot_market_reloaded.User.id = ? AND 1=1)
+    LIMIT ?
+    OFFSET ?
+    Params: [5,1,0]
+    Duration: 0ms Good
+    Result:
+    [
       {
-        "title": "갤럭시 폴드5",
-        "price": 650000,
-        "created_at": "2024-03-26T17:19:42.000Z",
-        "photo": "/images/fold5.jpeg",
-        "description": "갤럭시 폴드5 싸게 팔아요~",
-        "id": 11
+        id: 1,
+        title: '누가 나의 GPU를 찾나요?',
+        description: '물건이 아주 실합니다!!!',
+        views: 0,
+        created_at: 2024-04-02T01:25:43.594Z,
+        _count: { comments: 0, likes: 1 }
       }
     ]
-    🎉🎉🎉  DONE! 🎉🎉🎉
+     ❖ DONE! ❖
     ```
 
 

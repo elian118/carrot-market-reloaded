@@ -19,7 +19,7 @@ export const getInitialProducts = async () => {
       created_at: 'desc',
     },
   });
-  setQueryLog('첫 상품목록 조회', getInitialProducts.name, result);
+  setQueryLog('첫 상품목록 조회', 'getInitialProducts', result);
   return result;
 };
 
@@ -39,6 +39,6 @@ export const getMoreProducts = async (page: number) => {
       created_at: 'desc',
     },
   });
-  setQueryLog('상품목록 더 보기', getMoreProducts.name, result);
+  setQueryLog('상품목록 더 보기', 'getMoreProducts', result);
   return result;
 };
