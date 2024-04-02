@@ -1532,6 +1532,11 @@ ___
     먼저 지정된 초기값을 대신 넣어 랜더하고, 나중에 요청이 완료되면 다시 실제 상태를 반영해 랜더할 수 있다.
     
     ```javascript
+    const [state, reducer] = useOptimistic({ isLiked, likeCount }, (prevState) => ({
+      isLiked: !prevState.isLiked,
+      likeCount: prevState.isLiked ? prevState.likeCount - 1 : prevState.likeCount + 1,
+    }));
+    
     const onClick = async () => {
       reducer(undefined);
       isLiked ? await dislikePost(postId) : await likePost(postId);
