@@ -22,8 +22,9 @@ export const getIsOwner = async (userId: number) => {
   return id ? id === userId : false;
 };
 
-export const removeProduct = async (id: number) => {
-  const { photo } = await delProduct(id);
+export const removeProduct = async (formData: FormData) => {
+  const productId = formData.get('productId');
+  const { photo } = await delProduct(Number(productId));
   const photoId = photo.split('/').slice(-1)[0];
   await delProductImage(photoId);
   redirect('/home');

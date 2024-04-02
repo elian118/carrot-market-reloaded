@@ -26,11 +26,6 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
   if (!product) return notFound();
   const isOwner = await getIsOwner(product.user_id);
 
-  const delProduct = async () => {
-    'use server';
-    await removeProduct(product.id);
-  };
-
   return (
     <div>
       <div className="relative aspect-square">
@@ -63,7 +58,8 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
             {formatToWon(product.price)}
           </span>
           <div>
-            <form action={delProduct}>
+            <form action={removeProduct} method="POST">
+              <input type="hidden" name="productId" value={id} />
               {isOwner && (
                 <Button type="submit" method="delete">
                   상품 삭제
