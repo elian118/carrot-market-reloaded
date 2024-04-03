@@ -12,3 +12,16 @@ export const getProductTitle = async (id: number) => {
   setQueryLog('상품명 조회', 'getProductTitle', result);
   return result;
 };
+
+export const createChatRoom = async (sellerId: number, userId: number) => {
+  const room = await db.chatRoom.create({
+    data: {
+      users: {
+        connect: [{ id: sellerId }, { id: userId }],
+      },
+    },
+    select: { id: true },
+  });
+  setQueryLog('채팅방 개설', 'createChatRoom', room);
+  return room;
+};

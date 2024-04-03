@@ -1,8 +1,9 @@
 'use server';
 
-import { getSession } from '@/libs/session';
+import { getSession, getUser } from '@/libs/session';
 import { delProduct } from '@/common/repositories';
 import { redirect } from 'next/navigation';
+import { createChatRoom } from '@/app/products/[id]/repositories';
 
 const delProductImage = async (imageId: string) => {
   await fetch(
@@ -28,4 +29,11 @@ export const removeProduct = async (formData: FormData) => {
   const photoId = photo.split('/').slice(-1)[0];
   await delProductImage(photoId);
   redirect('/home');
+};
+
+export const hostChatRoom = async (formData: FormData) => {
+  const sellerId = formData.get('sellerId');
+  const user = await getUser();
+  const room = await createChatRoom(Number(sellerId), user.id);
+  redirect(`/chats/${room.id}`);
 };

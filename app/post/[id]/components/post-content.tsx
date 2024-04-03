@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { formatToTimeAgo } from '@/libs/utils';
+import { formatToTimeAgo, parsePhotoUrl } from '@/libs/utils';
 import { EyeIcon } from '@heroicons/react/24/solid';
 import { LikeButton } from '@/app/post/[id]/components/views';
 import Button from '@/components/button';
@@ -25,7 +25,7 @@ const PostContent = ({ post, postId, isLiked, likeCount, foldState }: PostProps)
           width={28}
           height={28}
           className="size-7 rounded-full"
-          src={post!.user.avatar!}
+          src={parsePhotoUrl(post!.user.avatar, 'avatar')}
           alt={post!.user.username}
         />
         <div>

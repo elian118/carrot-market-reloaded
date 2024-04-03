@@ -1,11 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { formatToTimeAgo } from '@/libs/utils';
+import { formatToTimeAgo, parsePhotoUrl } from '@/libs/utils';
 import Button from '@/components/button';
 import { InitialComments } from '@/app/post/[id]/types';
 import { useEffect } from 'react';
-import noUserImg from '@/public/images/no_user.png';
 import { removeComment } from '@/app/post/[id]/services';
 import { useComment } from '@/app/post/[id]/hooks';
 
@@ -50,7 +49,7 @@ const CommentList = ({ postId, initComments, userId, foldState }: CommentListPro
                     height={28}
                     className="size-7 rounded-full"
                     style={{ border: comment.user.avatar ? undefined : '1px solid gray' }}
-                    src={comment.user.avatar ?? noUserImg}
+                    src={parsePhotoUrl(comment.user.avatar, 'avatar')}
                     alt={comment.user.username}
                   />
                   <div>

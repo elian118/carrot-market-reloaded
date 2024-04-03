@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { formatToWon, parsePhotoUrl } from '@/libs/utils';
 import Button from '@/components/button';
-import { getIsOwner, removeProduct } from '@/app/products/[id]/services';
+import { getIsOwner, hostChatRoom, removeProduct } from '@/app/products/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
 import { getProduct, getProducts } from '@/common/repositories';
 
@@ -37,7 +37,7 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
             <Image
               fill
               className="object-cover"
-              src={product.user.avatar}
+              src={parsePhotoUrl(product.user.avatar, 'avatar')}
               alt={product.user.username}
             />
           ) : (
@@ -69,7 +69,12 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
           </div>
           <div className="flex gap-2">
             <Button href="/home">목록으로</Button>
-            <Button href={`/chat/${id}`}>채팅하기</Button>
+            <form action={hostChatRoom} method="POST">
+              <input type="hidden" name="sellerId" value={product.user_id} />
+              <Button type="submit" href={`/chat/${id}`}>
+                채팅하기
+              </Button>
+            </form>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ProductProps } from '@/app/(tabs)/home/@modal/(...)products/[id]/types';
 import Image from 'next/image';
+import { parsePhotoUrl } from '@/libs/utils';
 
 export const UserInfo = ({ product }: ProductProps) => {
   return (
@@ -11,7 +12,7 @@ export const UserInfo = ({ product }: ProductProps) => {
             className="object-fill rounded-full"
             width={200}
             height={200}
-            src={product.user.avatar ?? ''}
+            src={parsePhotoUrl(product.user.avatar, 'avatar')}
             alt={product.user.username}
           />
         </div>

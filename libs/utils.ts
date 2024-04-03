@@ -1,5 +1,6 @@
 import db from '@/libs/db';
 import chalk from 'chalk';
+import noUserImg from '@/public/images/no_user.png';
 
 export const formatToTimeAgo = (date: string): string => {
   const dayInMs = 1000 * 60 * 60 * 24;
@@ -50,9 +51,11 @@ export const setQueryLog = (
 };
 
 export const parsePhotoUrl = (
-  photoUrl: string,
+  photoUrl: string | null,
   format: 'public' | 'avatar' = 'public',
 ) =>
-  photoUrl.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
-    ? `${photoUrl}/${format}`
-    : photoUrl;
+  photoUrl
+    ? photoUrl.includes(process.env.NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL!)
+      ? `${photoUrl}/${format}`
+      : photoUrl
+    : noUserImg;
