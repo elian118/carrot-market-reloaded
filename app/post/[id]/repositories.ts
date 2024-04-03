@@ -121,6 +121,6 @@ export const delComment = async (commentId: number) => {
       id: commentId,
     },
   });
-  setQueryLog('댓글목록 불러오기', 'getComments', result);
+  setQueryLog('댓글 삭제', 'delComment', result);
   return result;
 };
