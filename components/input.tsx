@@ -14,7 +14,7 @@ const _Input = (
       <input
         ref={ref}
         name={name}
-        className="bg-transparent rounded-md w-full h-10 outline-none ring-1 focus:ring-4 transition ring-neutral-200 focus:ring-orange-500 border-none placeholder:text-neutral-400 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed"
+        className="bg-transparent rounded-md w-full h-10 outline-none ring-1 focus:ring-4 transition ring-gray-400 dark:ring-neutral-200 focus:ring-orange-500 border-none placeholder:text-neutral-400 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed"
         {...rest}
       />
       {errors?.map((err, idx) => (

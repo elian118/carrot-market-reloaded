@@ -13,6 +13,8 @@ type ButtonProps = {
   isLoading?: boolean;
   method?: 'post' | 'delete';
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  rounded?: boolean;
+  outlined?: boolean;
   fullWidth?: boolean;
 };
 const Button = ({
@@ -22,6 +24,8 @@ const Button = ({
   href,
   isLoading,
   onClick,
+  rounded,
+  outlined,
   method = 'post',
   fullWidth = false,
 }: ButtonProps) => {
@@ -32,7 +36,7 @@ const Button = ({
   ) : (
     <button
       type={type}
-      className={`px-6 ${fullWidth ? 'w-full flex justify-center items-center' : 'w-fit'} ${!fullWidth && 'mx-auto'} h-11 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed font-semibold active:scale-90 ${method === 'delete' ? 'delete-btn' : 'primary-btn'}`}
+      className={`px-6 ${fullWidth ? 'w-full flex justify-center items-center' : 'w-fit'} ${!fullWidth && 'mx-auto'} h-10 disabled:bg-neutral-400 disabled:text-neutral-300 disabled:cursor-not-allowed font-semibold active:scale-90 ${method === 'delete' ? 'delete-btn' : 'primary-btn'} ${rounded && 'rounded-full'} ${outlined && 'bg-transparent border border-orange-400 *:text-orange-400 *:font-medium *:hover:font-semibold *:hover:text-white'}`}
       disabled={isLoading ?? pending}
       onClick={onClick}
     >

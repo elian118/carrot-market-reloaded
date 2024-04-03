@@ -1,6 +1,12 @@
 'use server';
 
-import { createLike, delLike, getLike, getLikeCount } from '@/app/post/[id]/repositories';
+import {
+  createLike,
+  delComment,
+  delLike,
+  getLike,
+  getLikeCount,
+} from '@/app/post/[id]/repositories';
 import { revalidateTag } from 'next/cache';
 import { getSessionId } from '@/libs/session';
 
@@ -36,4 +42,13 @@ export const getLikeStatus = async (id: number) => {
     likeCount,
     isLiked: isLiked,
   };
+};
+
+export const fetchComment = async (postId: number) => {
+  revalidateTag(`post-comments-${postId}`);
+};
+
+export const removeComment = async (commentId: number, postId: number) => {
+  await delComment(commentId);
+  await fetchComment(postId);
 };
