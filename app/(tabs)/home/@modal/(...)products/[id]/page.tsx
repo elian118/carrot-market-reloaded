@@ -2,6 +2,7 @@ import { getProductInfo } from '@/app/(tabs)/home/@modal/(...)products/[id]/serv
 import {
   CloseBtn,
   EditBtn,
+  MoreDetailBtn,
   ProductImage,
   TitleBox,
   UserInfo,
@@ -15,7 +16,8 @@ const Modal = async ({ params }: { params: { id: string } }) => {
     <div className="absolute w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-60 left-0 top-0">
       <div className="absolute w-full h-full z-50 flex justify-center items-center bg-black bg-opacity-60 left-0 top-0">
         <div className="max-w-screen-sm h-1/2 flex justify-center w-full items-center">
-          <div className="w-28 h-8 flex gap-3 absolute right-5 top-5 *:text-neutral-200">
+          <div className="w-28 h-8 flex gap-2 absolute right-8 top-5 *:text-neutral-200">
+            <MoreDetailBtn />
             <EditBtn id={params.id} />
             <CloseBtn />
           </div>

@@ -57,24 +57,18 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
           <span className="font-semibold text-xl text-white">
             {formatToWon(product.price)}
           </span>
-          <div>
-            <form action={removeProduct} method="POST">
-              <input type="hidden" name="productId" value={id} />
-              {isOwner && (
+          <div className="flex gap-2">
+            <form action={isOwner ? removeProduct : hostChatRoom} method="POST">
+              <input type="hidden" name="sellerId" value={product.user_id} />
+              {isOwner ? (
                 <Button type="submit" method="delete">
                   상품 삭제
                 </Button>
+              ) : (
+                <Button type="submit">채팅하기</Button>
               )}
             </form>
-          </div>
-          <div className="flex gap-2">
             <Button href="/home">목록으로</Button>
-            <form action={hostChatRoom} method="POST">
-              <input type="hidden" name="sellerId" value={product.user_id} />
-              <Button type="submit" href={`/chat/${id}`}>
-                채팅하기
-              </Button>
-            </form>
           </div>
         </div>
       </div>
