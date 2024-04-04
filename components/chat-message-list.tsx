@@ -1,14 +1,13 @@
 'use client';
 
-import { InitialMessages, Message } from '@/app/chats/[id]/types';
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import { InitialMessages } from '@/app/chats/[id]/types';
+import { useEffect } from 'react';
 import { formatToTimeAgo, parsePhotoUrl } from '@/libs/utils';
 import Image from 'next/image';
 import IconButton from '@/components/icon-button';
-import { ArrowSmallUpIcon } from '@heroicons/react/20/solid';
 import { createClient } from '@supabase/supabase-js';
-import { RealtimeChannel } from '@supabase/realtime-js';
-import { saveMessage } from '@/app/chats/[id]/services';
+import { useChats } from '@/app/chats/[id]/hooks';
+import { ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 
 type ChatMessageListProps = {
   chatRoomId: string;
@@ -25,37 +24,11 @@ const ChatMessageList = ({
   username,
   avatar,
 }: ChatMessageListProps) => {
-  const [messages, setMessages] = useState<InitialMessages>(initialMessages);
-  const [message, setMessage] = useState<string>('');
-  const channel = useRef<RealtimeChannel>();
-
-  const isUser = (message: Message) => message.user_id === userId;
-
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const sendMessage = {
-      id: Date.now(),
-      payload: message,
-      created_at: new Date(),
-      user_id: userId,
-      user: { username, avatar },
-    };
-
-    channel.current?.send({
-      type: 'broadcast',
-      event: 'message',
-      payload: sendMessage,
-    });
-    // 본인 메시지 로그 갱신
-    setMessages((prevMsgs) => [...prevMsgs, sendMessage]);
-    await saveMessage(message, chatRoomId);
-    setMessage('');
-  };
-
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
+  const { isUser, message, messages, setMessages, onChange, onSubmit, channel } =
+    useChats();
 
   useEffect(() => {
+    setMessages(initialMessages);
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPERBASE_URL!,
       process.env.NEXT_PUBLIC_SUPERBASE_PUBLIC_API_KEY!,
@@ -79,9 +52,9 @@ const ChatMessageList = ({
         messages.map((message) => (
           <div
             key={message.id}
-            className={`flex gap-2 items-start ${isUser(message) && 'justify-end'}`}
+            className={`flex gap-2 items-start ${isUser(message, userId) && 'justify-end'}`}
           >
-            {!isUser(message) && (
+            {!isUser(message, userId) && (
               <Image
                 className="object-fill rounded-full size-8"
                 width={50}
@@ -90,9 +63,11 @@ const ChatMessageList = ({
                 alt={message.user.username}
               />
             )}
-            <div className={`flex flex-col gap-1 ${isUser(message) && 'items-end'}`}>
+            <div
+              className={`flex flex-col gap-1 ${isUser(message, userId) && 'items-end'}`}
+            >
               <span
-                className={`${!isUser(message) ? 'bg-neutral-500' : 'bg-orange-500'} p-2.5 rounded-md`}
+                className={`${!isUser(message, userId) ? 'bg-neutral-500' : 'bg-orange-500'} p-2.5 rounded-md`}
               >
                 {message.payload}
               </span>
@@ -102,7 +77,10 @@ const ChatMessageList = ({
             </div>
           </div>
         ))}
-      <form className="flex relative" onSubmit={onSubmit}>
+      <form
+        className="flex relative"
+        onSubmit={(e) => onSubmit(e, { userId, avatar, username, chatRoomId })}
+      >
         <input
           name="message"
           className="bg-neutral-200 dark:bg-transparent rounded-full w-full h-10 focus:outline-none px-5 ring-2 focus:ring-4 transition ring-orange-200 dark:ring-neutral-200 focus:ring-orange-300 dark:focus:ring-neutral-50 border-none placeholder:text-neutral-400"
@@ -115,7 +93,7 @@ const ChatMessageList = ({
           type="submit"
           className="absolute right-1.5 top-1.5"
           icon={
-            <ArrowSmallUpIcon className="dark:text-gray-900 size-7 rounded-full bg-orange-500" />
+            <ArrowUpCircleIcon className="dark:text-gray-900 size-7 rounded-full bg-orange-400 dark:bg-orange-500" />
           }
         />
       </form>
