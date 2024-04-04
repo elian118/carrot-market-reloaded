@@ -2,8 +2,8 @@ import { NextRequest } from 'next/server';
 import { saveLoginSession } from '@/libs/session';
 import {
   getAccessToken,
+  getGitHubUserProfile,
   getUserEmail,
-  getUserProfile,
 } from '@/app/(auth)/github/complete/services';
 import {
   createGitHubUser,
@@ -12,7 +12,7 @@ import {
 
 export const GET = async (req: NextRequest) => {
   const access_token: string = await getAccessToken(req);
-  const profile = await getUserProfile(req, access_token);
+  const profile = await getGitHubUserProfile(req, access_token);
   const email = await getUserEmail(req, access_token);
 
   // 1. 기존 사용자일때

@@ -1,8 +1,8 @@
 import LogoutBtn from '@/components/logout-btn';
-import { getUser } from '@/libs/session';
+import { getUserProfile } from '@/libs/session';
 
 const TabLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await getUser();
+  const user = await getUserProfile();
 
   return (
     <div>

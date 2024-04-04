@@ -1,7 +1,7 @@
-import { getUser, logout } from '@/libs/session';
+import { getUserProfile, logout } from '@/libs/session';
 
 const Live = async () => {
-  const user = await getUser();
+  const user = await getUserProfile();
 
   return (
     <div>

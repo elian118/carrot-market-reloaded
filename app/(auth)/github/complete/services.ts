@@ -25,7 +25,7 @@ export const getAccessToken = async (req: NextRequest) => {
   return access_token;
 };
 
-export const getUserProfile = async (req: NextRequest, token: string) => {
+export const getGitHubUserProfile = async (req: NextRequest, token: string) => {
   const userProfileResponse = await fetch('https://api.github.com/user', {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-cache',

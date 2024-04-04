@@ -4,12 +4,12 @@ import { getLikeStatus } from '@/app/post/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
 import CommentInput from '@/app/post/[id]/components/comment-input';
 import React from 'react';
-import { getUser } from '@/libs/session';
+import { getUserProfile } from '@/libs/session';
 import PostContainer from '@/app/post/[id]/components/PostContainer';
 
 const PostDetail = async ({ params }: { params: { id: string } }) => {
   const id = Number(params.id);
-  const user = await getUser();
+  const user = await getUserProfile();
 
   const getCachedPost = nextCache(getPost, ['post-detail'], {
     tags: ['post-detail'],

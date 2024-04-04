@@ -13,12 +13,16 @@ type ChatMessageListProps = {
   chatRoomId: string;
   initialMessages: InitialMessages;
   userId: number;
+  username: string;
+  avatar: string | null;
 };
 
 const ChatMessageList = ({
   chatRoomId,
   initialMessages,
   userId,
+  username,
+  avatar,
 }: ChatMessageListProps) => {
   const [messages, setMessages] = useState<InitialMessages>(initialMessages);
   const [message, setMessage] = useState<string>('');
@@ -29,28 +33,21 @@ const ChatMessageList = ({
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setMessages((prevMsg) => [
-      ...prevMsg,
-      {
+    channel.current?.send({
+      type: 'broadcast',
+      event: 'message',
+      payload: {
         id: Date.now(),
         payload: message,
         created_at: new Date(),
         user_id: userId,
-        user: { username: 'string', avatar: 'xxxx' },
+        user: { username, avatar },
       },
-    ]);
-
-    channel.current?.send({
-      type: 'broadcast',
-      event: 'message',
-      payload: { message },
     });
     setMessage('');
   };
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setMessage(e.target.value);
-  };
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
 
   useEffect(() => {
     const client = createClient(
@@ -60,7 +57,8 @@ const ChatMessageList = ({
     channel.current = client.channel(`room-${chatRoomId}`);
     channel.current
       .on('broadcast', { event: 'message' }, (payload) => {
-        console.log(payload);
+        // console.log(payload.payload);
+        setMessages((prevMsgs) => [...prevMsgs, payload.payload]);
       })
       .subscribe();
 

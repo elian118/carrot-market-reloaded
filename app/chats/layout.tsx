@@ -1,9 +1,9 @@
 import React from 'react';
-import { getUser } from '@/libs/session';
+import { getUserProfile } from '@/libs/session';
 import LogoutBtn from '@/components/logout-btn';
 
 const ChatLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await getUser();
+  const user = await getUserProfile();
 
   return (
     <div>

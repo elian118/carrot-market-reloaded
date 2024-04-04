@@ -1,6 +1,6 @@
 'use server';
 
-import { getSession, getUser } from '@/libs/session';
+import { getSession, getUserProfile } from '@/libs/session';
 import { delProduct } from '@/common/repositories';
 import { redirect } from 'next/navigation';
 import { createChatRoom } from '@/app/products/[id]/repositories';
@@ -33,7 +33,7 @@ export const removeProduct = async (formData: FormData) => {
 
 export const hostChatRoom = async (formData: FormData) => {
   const sellerId = formData.get('sellerId');
-  const user = await getUser();
+  const user = await getUserProfile();
   const room = await createChatRoom(Number(sellerId), user.id);
   redirect(`/chats/${room.id}`);
 };

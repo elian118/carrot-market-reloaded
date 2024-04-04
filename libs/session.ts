@@ -13,10 +13,13 @@ export const getSession = () => {
 };
 
 // 사용자 정보(id) 가져오기
-export const getUser = async () => {
+export const getUserProfile = async () => {
   const session = await getSession(); // 복호화 된 쿠키 반환
   const user = session.id
-    ? await db.user.findUnique({ where: { id: session.id } })
+    ? await db.user.findUnique({
+        where: { id: session.id },
+        select: { id: true, username: true, avatar: true },
+      })
     : null;
   return user ? user : notFound(); // 확인된 사용자 정보 없다면 404 처리
 };
