@@ -1566,7 +1566,36 @@ ___
       } catch (e) {}
     };
     ```
-    
+
+## # 15. Realtime Chat
+___
+1. [슈파베이스(Supabase)](https://supabase.com/)<br/><br/>
+
+    `Supabase`는 `Firebase` 대안 오픈 소스로,<br/>
+    Postgres 데이터베이스 기반으로 운영된다.<br/><br/>
+
+    파이어베이스와 마찬가지로 인증, 인스턴트 API, Edge Functions, 실시간 구독, <br/>
+    스토리지 및 벡터 임베딩 기능을 제공하며 프로젝트 구성 형태로 시작할 수 있다.<br/><br/>
+
+    슈파베이스를 이용하려면 먼저 회원가입 및 프로젝트 생성을 완료해<br/>
+    비밀번호, URL, API 키를 발급받고 환경변수로 등록한다.<br/><br/>
+    URL, API 키는 슈파베이스 접속 후 `Project Settings` > `API` 페이지에서 확인 가능하다.<br/>
+
+    ```dotenv
+    NEXT_PUBLIC_SUPERBASE_URL="슈퍼베이스 URL"
+    NEXT_PUBLIC_SUPERBASE_DB_PW="슈파베이스 DB 비밀번호"
+    NEXT_PUBLIC_SUPERBASE_PUBLIC_API_KEY="슈파베이스 공용 API 키"
+    ```
+
+    그리고 슈파베이스 라이브러리를 설치한다.<br/><br/>
+    넥스트 프로젝트는 자바스크립를 사용하므로 아래 모듈을 골라 설치하면 된다. - [참고](https://supabase.com/docs/reference/javascript/installing)<br/>
+    ```shell
+    yarn add @supabase/supabase-js
+    ```
+    여기서 구현할 실시간 채팅 기능은 슈파베이스의 브로드캐스트 서비스로<br/>
+    [공식 문서](https://supabase.com/docs/guides/realtime/broadcast)를 통해 적용하면 된다.<br/><br/>
+
+    실제 적용 사례는 `chat-message-list.tsx`에서 확인할 수 있다.<br/><br/>
 
 ## # 주의사항
 ___

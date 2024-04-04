@@ -12,7 +12,13 @@ const ChatRoom = async ({ params }: { params: { id: string } }) => {
   console.log(initialMessages);
   if (!room) return notFound();
 
-  return <ChatMessageList initialMessages={initialMessages} userId={user.id} />;
+  return (
+    <ChatMessageList
+      chatRoomId={params.id}
+      initialMessages={initialMessages}
+      userId={user.id}
+    />
+  );
 };
 
 export default ChatRoom;

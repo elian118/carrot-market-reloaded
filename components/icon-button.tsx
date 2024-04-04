@@ -11,15 +11,30 @@ type ButtonProps = {
   isLoading?: boolean;
   method?: 'post' | 'delete';
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  className?: string;
+  type?: 'submit' | 'button' | 'reset';
 };
-const IconButton = ({ icon, href, isLoading, onClick, method = 'post' }: ButtonProps) => {
+const IconButton = ({
+  icon,
+  href,
+  isLoading,
+  onClick,
+  method = 'post',
+  className,
+  type,
+}: ButtonProps) => {
   const { pending } = useFormStatus();
 
   return isLoading ?? pending ? (
     <ArrowPathIcon className="size-12 animate-spin mx-auto dark:text-gray-100" />
   ) : (
     <button
-      className={`bg-orange-500 hover:bg-orange-400 active:scale-95 rounded-full flex items-center justify-center size-16 text-white ${method === 'delete' ? 'delete-btn' : 'primary-btn'}`}
+      type={type}
+      className={
+        className
+          ? className
+          : `bg-orange-500 hover:bg-orange-400 active:scale-95 rounded-full flex items-center justify-center size-16 text-white ${method === 'delete' ? 'delete-btn' : 'primary-btn'}`
+      }
       disabled={isLoading ?? pending}
       onClick={onClick}
     >
