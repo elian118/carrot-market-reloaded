@@ -14,3 +14,23 @@ export const getRoom = async (id: string) => {
   setQueryLog('채팅방 입장', 'getRoom', room);
   return room;
 };
+
+export const getMessage = async (chat_room_id: string) => {
+  const messages = await db.message.findMany({
+    where: { chat_room_id },
+    select: {
+      id: true,
+      payload: true,
+      created_at: true,
+      user_id: true,
+      user: {
+        select: {
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+  setQueryLog('채팅 메시지 목록 불러오기', 'getMessage', messages);
+  return messages;
+};

@@ -1,4 +1,6 @@
-import { getRoom } from '@/app/chats/[id]/repositories';
+'use server';
+
+import { getMessage, getRoom } from '@/app/chats/[id]/repositories';
 import { getUser } from '@/libs/session';
 
 export const enterRoom = async (id: string) => {
@@ -10,3 +12,5 @@ export const enterRoom = async (id: string) => {
   }
   return room;
 };
+
+export const getMessages = async (id: string) => await getMessage(id);

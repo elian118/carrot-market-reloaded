@@ -1,4 +1,3 @@
-import React from 'react';
 import { ProductProps } from '@/app/(tabs)/home/@modal/(...)products/[id]/types';
 import Image from 'next/image';
 import { parsePhotoUrl } from '@/libs/utils';
