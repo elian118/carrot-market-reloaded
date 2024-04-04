@@ -34,3 +34,20 @@ export const getMessage = async (chat_room_id: string) => {
   setQueryLog('채팅 메시지 목록 불러오기', 'getMessage', messages);
   return messages;
 };
+
+export const createMessage = async (
+  payload: string,
+  chat_room_id: string,
+  user_id: number,
+) => {
+  const result = await db.message.create({
+    data: {
+      payload,
+      chat_room_id,
+      user_id,
+    },
+    select: { id: true },
+  });
+  setQueryLog('채팅 메시지 기록', 'createMessage', result);
+  return result;
+};

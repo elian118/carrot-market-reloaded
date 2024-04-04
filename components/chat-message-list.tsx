@@ -8,6 +8,7 @@ import IconButton from '@/components/icon-button';
 import { ArrowSmallUpIcon } from '@heroicons/react/20/solid';
 import { createClient } from '@supabase/supabase-js';
 import { RealtimeChannel } from '@supabase/realtime-js';
+import { saveMessage } from '@/app/chats/[id]/services';
 
 type ChatMessageListProps = {
   chatRoomId: string;
@@ -30,20 +31,25 @@ const ChatMessageList = ({
 
   const isUser = (message: Message) => message.user_id === userId;
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const sendMessage = {
+      id: Date.now(),
+      payload: message,
+      created_at: new Date(),
+      user_id: userId,
+      user: { username, avatar },
+    };
 
     channel.current?.send({
       type: 'broadcast',
       event: 'message',
-      payload: {
-        id: Date.now(),
-        payload: message,
-        created_at: new Date(),
-        user_id: userId,
-        user: { username, avatar },
-      },
+      payload: sendMessage,
     });
+    // 본인 메시지 로그 갱신
+    setMessages((prevMsgs) => [...prevMsgs, sendMessage]);
+    await saveMessage(message, chatRoomId);
     setMessage('');
   };
 
@@ -57,7 +63,7 @@ const ChatMessageList = ({
     channel.current = client.channel(`room-${chatRoomId}`);
     channel.current
       .on('broadcast', { event: 'message' }, (payload) => {
-        // console.log(payload.payload);
+        // 상대 메시지 로그 갱신
         setMessages((prevMsgs) => [...prevMsgs, payload.payload]);
       })
       .subscribe();
