@@ -1595,7 +1595,57 @@ ___
     여기서 구현할 실시간 채팅 기능은 슈파베이스의 브로드캐스트 서비스로<br/>
     [공식 문서](https://supabase.com/docs/guides/realtime/broadcast)를 통해 적용하면 된다.<br/><br/>
 
-    실제 적용 사례는 `chat-message-list.tsx`에서 확인할 수 있다.<br/><br/>
+    브로드캐스트는 메시지 데이터를 DB에 기록하는 게 아니라,<br/>
+    슈파베이스 브로드케스트 코드가 입력된 주소로 접속한 모든 사용자들에게<br/>
+    웹소켓으로 입력한 메시지를 단순 공유하는 역할만 한다.<br/><br/>
+
+    메시지 데이터는 오직 MySQL DB에 기록되며,<br/>
+    실제 적용 사례는 `chat-message-list.tsx`에서 확인할 수 있다.<br/>
+    ```javascript
+    const channel = useRef<RealtimeChannel>();
+    ...
+    
+   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+    
+      setMessages((prevMsg) => [
+        ...prevMsg,
+        {
+          id: Date.now(),
+          payload: message,
+          created_at: new Date(),
+          user_id: userId,
+          user: { username: 'string', avatar: 'xxxx' },
+        },
+      ]);
+    
+      channel.current?.send({
+        type: 'broadcast',
+        event: 'message',
+        payload: { message },
+      });
+      setMessage('');
+    };
+    ...
+    
+    useEffect(() => {
+      const client = createClient(
+        process.env.NEXT_PUBLIC_SUPERBASE_URL!,
+        process.env.NEXT_PUBLIC_SUPERBASE_PUBLIC_API_KEY!,
+      );
+      channel.current = client.channel(`room-${chatRoomId}`);
+      channel.current
+        .on('broadcast', { event: 'message' }, (payload) => {
+          console.log(payload);
+        })
+        .subscribe();
+    
+        return () => {
+          channel.current?.unsubscribe(); // 채널구독 종료 - 자원 반환
+        };
+    }, [chatRoomId]);
+    ...
+    ```
 
 ## # 주의사항
 ___

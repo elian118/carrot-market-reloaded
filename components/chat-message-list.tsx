@@ -1,12 +1,13 @@
 'use client';
 
 import { InitialMessages, Message } from '@/app/chats/[id]/types';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { formatToTimeAgo, parsePhotoUrl } from '@/libs/utils';
 import Image from 'next/image';
 import IconButton from '@/components/icon-button';
 import { ArrowSmallUpIcon } from '@heroicons/react/20/solid';
 import { createClient } from '@supabase/supabase-js';
+import { RealtimeChannel } from '@supabase/realtime-js';
 
 type ChatMessageListProps = {
   chatRoomId: string;
@@ -21,24 +22,13 @@ const ChatMessageList = ({
 }: ChatMessageListProps) => {
   const [messages, setMessages] = useState<InitialMessages>(initialMessages);
   const [message, setMessage] = useState<string>('');
+  const channel = useRef<RealtimeChannel>();
 
   const isUser = (message: Message) => message.user_id === userId;
 
-  useEffect(() => {
-    const client = createClient(
-      process.env.NEXT_PUBLIC_SUPERBASE_URL!,
-      process.env.NEXT_PUBLIC_SUPERBASE_PUBLIC_API_KEY!,
-    );
-    const channel = client.channel(`room-${chatRoomId}`);
-    channel.on('broadcast', { event: 'message' }, (payload) => {
-      console.log(payload);
-    });
-  }, []);
-
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // alert(message);
-    setMessage('');
+
     setMessages((prevMsg) => [
       ...prevMsg,
       {
@@ -49,11 +39,35 @@ const ChatMessageList = ({
         user: { username: 'string', avatar: 'xxxx' },
       },
     ]);
+
+    channel.current?.send({
+      type: 'broadcast',
+      event: 'message',
+      payload: { message },
+    });
+    setMessage('');
   };
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+
+  useEffect(() => {
+    const client = createClient(
+      process.env.NEXT_PUBLIC_SUPERBASE_URL!,
+      process.env.NEXT_PUBLIC_SUPERBASE_PUBLIC_API_KEY!,
+    );
+    channel.current = client.channel(`room-${chatRoomId}`);
+    channel.current
+      .on('broadcast', { event: 'message' }, (payload) => {
+        console.log(payload);
+      })
+      .subscribe();
+
+    return () => {
+      channel.current?.unsubscribe(); // 채널구독 종료 - 자원 반환
+    };
+  }, [chatRoomId]);
 
   return (
     <div className="p-5 flex flex-col gap-5 overflow-y-auto min-h-screen justify-end">
