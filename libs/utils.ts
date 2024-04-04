@@ -10,7 +10,7 @@ export const formatToTimeAgo = (date: string): string => {
   const diff = Math.round((time - now) / dayInMs);
 
   const formatter = new Intl.RelativeTimeFormat('ko');
-  const isToday = formatter.format(diff, 'days') === '0일 후';
+  const isToday = formatter.format(diff, 'days') === '0일 전';
   return isToday ? '오늘' : formatter.format(diff, 'days');
 };
 
@@ -59,3 +59,6 @@ export const parsePhotoUrl = (
       ? `${photoUrl}/${format}`
       : photoUrl
     : noUserImg;
+
+export const removeDupElements = (arr: any[]) =>
+  arr.filter((item, index) => arr.indexOf(item) === index);

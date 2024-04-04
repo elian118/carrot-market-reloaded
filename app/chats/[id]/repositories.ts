@@ -51,3 +51,17 @@ export const createMessage = async (
   setQueryLog('채팅 메시지 기록', 'createMessage', result);
   return result;
 };
+
+export const getMsgsInCurrentChatRoom = async (chatRoomId: string) => {
+  return db.message.count({
+    where: {
+      chat_room_id: chatRoomId,
+    },
+  });
+};
+
+export const delChatRoom = async (chatRoomId: string) => {
+  await db.chatRoom.delete({
+    where: { id: chatRoomId },
+  });
+};

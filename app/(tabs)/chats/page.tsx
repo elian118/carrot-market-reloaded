@@ -1,15 +1,19 @@
-import { getUserProfile, logout } from '@/libs/session';
+import { getUserChatCounts, getUserChatRooms } from '@/app/(tabs)/chats/services';
+import { getUserProfile } from '@/libs/session';
+import ChatRoomsWrapper from '@/app/(tabs)/chats/components/chat-rooms-wrapper';
 
 const Chats = async () => {
   const user = await getUserProfile();
+  const initialChatRooms = await getUserChatRooms(user.id);
+  const totalChatRoomCounts = await getUserChatCounts(user.id);
 
   return (
-    <div>
-      <h1 className="text-xl">어서 오세요 {user?.username}님!</h1>
-      <h1 className="text-4xl">여기는 채팅 페이지입니다.</h1>
-      <form action={logout}>
-        <button>Log out</button>
-      </form>
+    <div className="p-4">
+      <ChatRoomsWrapper
+        initialChatRooms={initialChatRooms}
+        user={user}
+        totalChatRoomCounts={totalChatRoomCounts}
+      />
     </div>
   );
 };
