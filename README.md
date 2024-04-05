@@ -1691,10 +1691,105 @@ ___
 2. 환경변수<br/><br/>
     
     넥스트는 접두어로 `NEXT_PUBLIC_`를 붙이지 않으면 클라이언트 사이드에서 참조할 수 없다.<br/>
-    아래는 넥스트 프로젝트에서 서버와 클라이언트 사이드 모두 참조 가능한 환경변수 네이밍 예시다.<br/><br/>
+    아래는 넥스트 프로젝트에서 서버와 클라이언트 사이드 모두 참조 가능한 환경변수 네이밍 예시다.<br/>
+
     ```dotenv
     NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID="[환경변수 값]"
     NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_HASH="[환경변수 값]"
     NEXT_PUBLIC_CLOUDFLARE_API_KEY="[환경변수 값]"
     NEXT_PUBLIC_CLOUDFLARE_IMAGE_DELIVERY_URL="[환경변수 값]"
+    ```
+   
+3. 전역 다이얼로그 사용법<br/><br/>
+
+    아래는 전역 다이얼로그를 호출하는 버튼 사용법이다.<br/>
+
+    ```javascript
+    <DialogBtn
+      dialogContent={{
+        type: 'confirm',
+        message: '<div class="bg-orange-500 rounded-md">테스트입니다.</div>',
+        callback: "console.log('완료')",
+      }}
+    >test</DialogBtn>
+    ```
+
+    Next.JS의 앱라우팅은 파일기반 라우팅의 MPA로 구성되므로,<br/>
+    컨텍스트 API나 리덕스 같은 상태관리 라이브러리를 통해 다른 페이지로 전역 상태를 공유할 수 없다.<br/>
+    (SPA처럼 개발하면 가능하긴 하지만, 이 경우 Next.JS를 쓰는 의미가 없다.)<br/><br/>
+    
+    다른 페이지간 리액트 상태 공유가 어려우므로,<br/>
+    SPA처럼 전역 다이얼로그를 루트에 랩핑하고 전역 상태 조작으로 제어가 불가하다.<br/><br/>
+    
+    그 대안으로 여기서는 iron-session 암호화 쿠키를 사용해<br/>
+    표시할 메시지를 전달한다.<br/><br/>
+
+    다시 말해, 전역 상태 저장소로 쿠키를 사용하는 것이다.<br/><br/>
+
+    ```javascript
+    export const getDialogSession = () => {
+      return getIronSession<SessionDialogContent>(cookies(), {
+        cookieName: 'carrot-dialog',
+        password: process.env.NEXT_PUBLIC_COOKIE_PASSWORD!,
+      });
+    };
+
+    export const getDialogContent = async () => await getDialogSession();
+
+    export const saveDialogData = async (props: SessionDialogContent) => {
+      const { type, message, fnCode, args, nextPage } = props;
+      const dialogSession = await getDialogSession();
+      dialogSession.type = type;
+      dialogSession.message = message;
+      dialogSession.fnCode = fnCode;
+      dialogSession.args = args;
+      dialogSession.nextPage = nextPage;
+      await dialogSession.save(); // 정보 암호화 후 쿠키에 저장
+    };
+
+    export const clearDialogSession = async () => {
+      const dialogSession = await getDialogSession();
+      dialogSession.destroy();
+    };
+    ```
+
+    전역 다이얼로그에서 사용할 message 속성은<br/>
+    파싱하는 컴포넌트에서 아래 코드를 활용해 HTML 코드를 직접 사용하므로,<br/>
+    테일윈드를 적용하려면 className 대신 class 를 써야 한다.<br/>
+
+    ```javascript
+    <div dangerouslySetInnerHTML={{ __html: dialogContent.message }} />
+    ```
+    컨펌 시 실행할 함수는 쿠키로 전달할 수 없으므로,<br/>
+    미리 실행될 콜백들을 상수로 지정해두고 다이얼로그에서 끌어다 쓰도록 해야 한다.<br/>
+
+    ```javascript
+    export enum FnCODE {
+      RemoveProduct = 'RemoveProduct',
+    }
+    
+    export const fnCodeMap = [
+      {
+        code: FnCODE.RemoveProduct,
+        fn: removeProductFromDial,
+      },
+    ];
+    ```
+    ```javascript
+    const reload = async (nextPage: string) => {
+      setTimeout(() => window.location.reload(), 100);
+      nextPage && router.push(nextPage);
+    };
+    
+    const closeDialog = async (nextPage?: string) => {
+      nextPage ? await reload(nextPage) : router.back();
+    };
+   
+    const confirm = async () => {
+      if (content.fnCode) {
+        const callback = fnCodeMap.find((e) => e.code === dialogContent.fnCode)?.fn!;
+        content.args ? await callback(content.args) : await callback();
+      }
+      await closeDialog(content.nextPage);
+    };
     ```

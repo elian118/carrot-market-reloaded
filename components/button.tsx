@@ -2,21 +2,9 @@
 
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
-import { MouseEventHandler } from 'react';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import { ButtonProps } from '@/libs/types';
 
-type ButtonProps = {
-  children: React.ReactNode | string;
-  icon?: React.ReactNode;
-  type?: 'button' | 'reset' | 'submit';
-  href?: string;
-  isLoading?: boolean;
-  method?: 'post' | 'delete';
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  rounded?: boolean;
-  outlined?: boolean;
-  fullWidth?: boolean;
-};
 const Button = ({
   children,
   icon,

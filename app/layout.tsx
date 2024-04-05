@@ -15,8 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({
+  dial,
   children,
 }: Readonly<{
+  dial: React.ReactNode;
   children: React.ReactNode;
 }>) {
   return (
@@ -27,6 +29,7 @@ export default async function RootLayout({
         <ThemeProvider enableSystem attribute="class">
           <ThemeToggle />
           {children}
+          {dial}
         </ThemeProvider>
       </body>
     </html>

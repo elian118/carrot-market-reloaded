@@ -31,6 +31,12 @@ export const removeProduct = async (formData: FormData) => {
   redirect('/home');
 };
 
+export const removeProductFromDial = async (props?: any) => {
+  const { photo } = await delProduct(Number(props?.productId));
+  const photoId = photo.split('/').slice(-1)[0];
+  await delProductImage(photoId);
+};
+
 export const hostChatRoom = async (formData: FormData) => {
   const sellerId = formData.get('sellerId');
   const user = await getUserProfile();

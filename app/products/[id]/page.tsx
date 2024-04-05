@@ -3,9 +3,11 @@ import Image from 'next/image';
 import { UserIcon } from '@heroicons/react/24/solid';
 import { formatToWon, parsePhotoUrl } from '@/libs/utils';
 import Button from '@/components/button';
-import { getIsOwner, hostChatRoom, removeProduct } from '@/app/products/[id]/services';
+import { getIsOwner, hostChatRoom } from '@/app/products/[id]/services';
 import { unstable_cache as nextCache } from 'next/cache';
 import { getProduct, getProducts } from '@/common/repositories';
+import DialogBtn from '@/components/dialog-btn';
+import { FnCODE } from '@/libs/constants';
 
 const getCachedProduct = nextCache(getProduct, ['products-detail'], {
   tags: ['detail', 'info'],
@@ -58,16 +60,25 @@ const ProductDetail = async ({ params }: { params: { id: string } }) => {
             {formatToWon(product.price)}
           </span>
           <div className="flex gap-2">
-            <form action={isOwner ? removeProduct : hostChatRoom} method="POST">
-              <input type="hidden" name="sellerId" value={product.user_id} />
-              {isOwner ? (
-                <Button type="submit" method="delete">
-                  상품 삭제
-                </Button>
-              ) : (
+            {isOwner ? (
+              <DialogBtn
+                dialogContent={{
+                  type: 'confirm',
+                  message: '<div class="text-2xl">상품을 삭제하시겠습니까?</div>',
+                  args: { productId: id },
+                  fnCode: FnCODE.RemoveProduct,
+                  nextPage: '/home',
+                }}
+                method="delete"
+              >
+                상품 삭제
+              </DialogBtn>
+            ) : (
+              <form action={hostChatRoom}>
+                <input type="hidden" name="sellerId" value={product.user_id} />
                 <Button type="submit">채팅하기</Button>
-              )}
-            </form>
+              </form>
+            )}
             <Button href="/home">목록으로</Button>
           </div>
         </div>
