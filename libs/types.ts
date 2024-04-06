@@ -42,3 +42,31 @@ export type FnCode = {
   code: FnCODE;
   fn: (...args: any[]) => void;
 };
+
+export type CFStreamResResult = {
+  uid: string;
+  rtmps: {
+    url: string;
+    streamKey: string;
+  };
+  created: string;
+  modified: string;
+  meta: {
+    name: string;
+  };
+  status: null;
+  recording: {
+    mode: string;
+    requireSignedURLs: boolean;
+    allowedOrigins: any;
+  };
+};
+
+export type CFError = { code: number; message: number };
+
+export type CFRes = {
+  result: CFStreamResResult | null;
+  success: boolean;
+  errors: CFError[];
+  messages: [{ code: number; message: string }];
+};

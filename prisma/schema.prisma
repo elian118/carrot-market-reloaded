@@ -8,22 +8,23 @@ datasource db {
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  username   String     @unique
-  email      String?    @unique
-  password   String?
-  phone      String?    @unique
-  github_id  String?    @unique
-  avatar     String?
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  tokens     SMSToken[]
-  products   Product[]
-  posts      Post[]
-  comments   Comment[]
-  likes      Like[]
-  chat_rooms ChatRoom[]
-  messages   Message[]
+  id          Int          @id @default(autoincrement())
+  username    String       @unique
+  email       String?      @unique
+  password    String?
+  phone       String?      @unique
+  github_id   String?      @unique
+  avatar      String?
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  tokens      SMSToken[]
+  products    Product[]
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  chat_rooms  ChatRoom[]
+  messages    Message[]
+  LiveStreams LiveStream[]
 }
 
 model SMSToken {
@@ -99,4 +100,15 @@ model Message {
   user         User     @relation(fields: [user_id], references: [id])
   chat_room_id String
   user_id      Int
+}
+
+model LiveStream {
+  id         Int      @id @default(autoincrement())
+  title      String
+  stream_key String
+  stream_id  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
 }
