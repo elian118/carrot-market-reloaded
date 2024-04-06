@@ -1809,7 +1809,7 @@ ___
 5. 보안<br/><br/>
 
     여기서 사용된 보안 조치로는 개발모드에서 유용하게 사용될 법한 것들로<br/>
-    실험적인 리액트 함수`experimental_taintObjectReference`, `experimental_taintUniqueValue`와<br/>
+    실험적인 리액트 함수 [experimental_taintObjectReference](https://react.dev/reference/react/experimental_taintObjectReference), [experimental_taintUniqueValue](https://react.dev/reference/react/experimental_taintUniqueValue)와<br/>
     `server-only` 라이브러리를 적용해봤다.<br/><br/>
 
     먼저 리액트의 보안 관련 함수를 사용하려면 넥스트 설정에 아래 내용을 추가한다.<br/>
@@ -1854,7 +1854,40 @@ ___
     ```
 
     위 함수를 클라이언트 컴포넌트에서 호출하면 아래 오류가 뜬다.<br/>
-   ![server-only-error.JPG](public%2Fimages%2Fserver-only-error.JPG)<br/>
+    ![server-only-error.JPG](public%2Fimages%2Fserver-only-error.JPG)<br/><br/>
+
+6. 이미지 최적화<br/><br/>
+
+    넥스트의 `Image` 컴포넌트는 느린 통신환경에서도 대응이 가능한 기능을 기본 제공한다.<br/>
+    아래는 대용량 이미지를 완전히 불러오기 전까지 `placeholder` 속성을 사용해 흐림 처리하고 있다.<br/><br/>
+
+    완전히 불러오기 전까지 다른 이미지를 대신 보여주려면<br/>
+    `placeholder`에 대체 이미지의 base64 문자열을 입력하면 된다.
+
+    ```javascript
+    <Image
+      className="rounded-xl"
+      src={heaveImg}
+      alt="heavy image"
+      placeholder="blur" // 대체 이미지의 base64 문자열 입력도 가능
+    />
+    ```
+    아래는 대용량 이미지를 완전히 불러오기 전까지 `blurDataURL` 속성을 사용해<br/>
+    다른 이미지를 대신 보여줌과 동시에 흐림 처리하고 있다.<br/>
+    ```javascript
+    import alterImgBase64Str from './contstants';
+    ...
+    
+    <Image
+      className="rounded-xl"
+      src={heaveImg}
+      alt="heavy image"
+      placeholder="blur"
+      blurDataURL={alterImgBase64Str}
+    />
+    ```
+   
+    제대로 확인하고 싶다면 개발자도구에서 네트워크 환경을 3G로 맞추고 테스트해보기 바란다. 
 
 ## # 주의사항
 ___

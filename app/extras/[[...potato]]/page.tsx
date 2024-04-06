@@ -1,4 +1,6 @@
 import { fetchData, getFetchData } from '@/app/extras/[[...potato]]/services';
+import Image from 'next/image';
+import heaveImg from '@/public/images/too-big-size-nature.jpg';
 
 const Extras = async ({ params }: { params: { potato: string } }) => {
   await getFetchData(); // 단순 로그 테스트용
@@ -18,6 +20,16 @@ const Extras = async ({ params }: { params: { potato: string } }) => {
       <form action={fetchData}>
         <button>revalidate</button>
       </form>
+      <hr />
+      <h1 className="text-6xl font-rubik">Too Big Image!</h1>
+      <div className="flex flex-col gap-2">
+        <Image
+          className="rounded-xl"
+          src={heaveImg}
+          alt="heavy image"
+          placeholder="blur"
+        />
+      </div>
       <hr />
       {/*<HackedComponent data={hackedData} />  // 해킹 테스트 클라이언트 컴포넌트*/}
     </div>
