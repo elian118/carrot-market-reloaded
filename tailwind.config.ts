@@ -9,6 +9,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: 'var(--roboto-text)',
+        rubik: 'var(--rubik-text)',
+        nanumgothic: 'var(--nanum-gothic)',
+        metalica: 'var(--metalica)',
+        notosanskr: 'var(--noto-sans-kr)',
+        notoserifkr: 'var(--noto-serif-kr)',
+      },
       margin: {
         tomato: '120px',
       },

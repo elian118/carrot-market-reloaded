@@ -1654,6 +1654,100 @@ ___
     * 따라서, 같은 브라우저 창을 두 개 띄워두고 각각 로그인하더라도<br/>
       쿠키는 가장 최근 접속자 정보로 갱신된다.
 
+## # 17. Next.JS Extras
+___
+1. 폰트 최적화<br/><br/>
+
+    넥스트에서는 편의 기능으로 [폰트 최적화](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)를 제공한다.<br/><br/>
+
+    이 기능은 css 재정의 없이 구글 웹폰트나 폰트 파일 자원을 가져다 넥스트 프로젝트에 적용할 수 있고<br/>
+    클래스 변수 생성해 테일윈드 설정에 등록하면<br/>
+    테일윈드에서도 인텔리센스를 통해 폰트를 간편히 가져다 사용할 수 있다.<br/><br/>
+
+    적용 예제는 `@/app/layout.tsx`, `@/app/tailwind.config.ts` 파일을 참고하면 된다.<br/>
+    ```javascript
+    import type { Metadata } from 'next';
+    import { Roboto, Rubik_Scribble, Noto_Sans_KR, Noto_Serif_KR } from 'next/font/google';
+    import localFont from 'next/font/local';
+    import { ThemeToggle } from '@/components/theme-toggle';
+    import { ThemeProvider } from 'next-themes';
+    import './globals.css';
+    
+    // const inter = Inter({ subsets: ['latin'] });
+    const roboto = Roboto({
+      subsets: ['latin'],
+      weight: ['400', '500'],
+      style: ['normal', 'italic'],
+      variable: '--roboto-text',
+    });
+    ...
+    
+    const metalica = localFont({
+      src: '../public/fonts/Metalica.ttf',
+      variable: '--metalica',
+    });
+    ...
+    
+    export default async function RootLayout({
+      dial,
+      children,
+    }: Readonly<{
+      dial: React.ReactNode;
+      children: React.ReactNode;
+    }>) {
+      // console.log(roboto);
+      return (
+        <html lang="en">
+          <body
+            className={`${roboto.variable} ${rubik.variable} ${nanumGothic.variable} ${metalica.variable} ${notoSansKr.variable} ${notoSerifKr.variable} bg-gray-100 dark:bg-gray-800 max-w-screen-sm mx-auto`}
+            // style={roboto.style}
+          >
+            ...
+          </body>
+        </html>
+      );
+    }
+    ```
+    ```javascript
+    import type { Config } from 'tailwindcss';
+    
+    const config: Config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            roboto: 'var(--roboto-text)',
+            rubik: 'var(--rubik-text)',
+            nanumgothic: 'var(--nanum-gothic)',
+            metalica: 'var(--metalica)',
+            notosanskr: 'var(--noto-sans-kr)',
+            notoserifkr: 'var(--noto-serif-kr)',
+          },
+        margin: {
+        tomato: '120px',
+      },
+      ...
+    };
+   
+    export default config;
+    ```
+    폰트 사용 예제는 `@/app/extras/page.tsx`<br/>
+    ```javascript
+    const Extras = () => {
+      return (
+        <div className="flex flex-col gap-3 py-10">
+        <h1 className="text-6xl font-metalica">Extras!</h1>
+        <h1 className="text-6xl font-rubik">Extras!</h1>
+        <h2 className="font-roboto">So much more to learn!</h2>
+        <h2 className="font-nanumgothic">나눔고딕 폰트 샘플</h2>
+        <h2 className="font-notosanskr">노토산스코리아(Noto Sans Kr) 폰트 샘플</h2>
+        <h2 className="font-notoserifkr">노토세리프코리아(Noto Serif Kr) 폰트 샘플</h2>
+        </div>
+      );
+    };
+    
+    export default Extras;
+    ```
+
 ## # 주의사항
 ___
 1. 넥스트에서 함수는 "use server" 선언을 하지 않는 한 클라이언트 컴포넌트를 직접 통과할 수 없다.
