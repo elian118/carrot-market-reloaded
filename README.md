@@ -1747,6 +1747,7 @@ ___
     
     export default Extras;
     ```
+    ![extras.png](public%2Fimages%2Fextras.png)
     <br/>
    
 2. 개인 폴더 적용<br/><br/>
@@ -1777,6 +1778,33 @@ ___
     ```
     이 경우에도 페이지 접근을 허용하려면 `[[...param]]`으로 변경하면 된다.<br/><br/>
     ![multi-dynamic-route.png](public%2Fimages%2Fmulti-dynamic-route.png)
+
+4. 기록
+
+    넥스트는 서버 사이드에서 처리되는 사항을 기본 기록해 콘솔로 보여준다.<br/>
+    이 기록 방식 또한 커스더마이징이 가능한데, 아래처럼 설정하면 모든 fetch 요청 url이 자세히 기록된다.<br/>
+    ```javascript
+    /** @type {import('next').NextConfig} */
+    const nextConfig = {
+      logging: {
+        fetches: {
+          fullUrl: true,
+        }
+      },
+      ...
+    ```
+    아래는 첫 페이지 진입 시 `fetch`를 실행하고 캐시에 기록했으며,
+    이후 페이지 새로고침 시 재실행된 `fetch`는 캐시 기록을 건너뛰었다는 로그다.
+    ```shell
+    ...
+    GET /extras 200 in 30ms
+    GET /extras 200 in 26ms
+    │ GET https://nodmad-movies.nomadcoders.workers.dev/movies 200 in 1ms (cache: HIT)
+    GET /extras 200 in 533ms
+    GET /extras 200 in 519ms
+    │ GET https://nodmad-movies.nomadcoders.workers.dev/movies 404 in 473ms (cache: SKIP)
+    │  │  Cache missed reason: (cache-control: no-cache (hard refresh))
+    ```
 
 ## # 주의사항
 ___
