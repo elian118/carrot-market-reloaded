@@ -1777,7 +1777,7 @@ ___
     http://localhost:3000/extras
     ```
     이 경우에도 페이지 접근을 허용하려면 `[[...param]]`으로 변경하면 된다.<br/><br/>
-    ![multi-dynamic-route.png](public%2Fimages%2Fmulti-dynamic-route.png)
+    ![multi-dynamic-route.png](public%2Fimages%2Fmulti-dynamic-route.png)<br/><br/>
 
 4. 기록<br/><br/>
 
@@ -1805,6 +1805,56 @@ ___
     │ GET https://nodmad-movies.nomadcoders.workers.dev/movies 404 in 473ms (cache: SKIP)
     │  │  Cache missed reason: (cache-control: no-cache (hard refresh))
     ```
+   
+5. 보안<br/><br/>
+
+    여기서 사용된 보안 조치로는 개발모드에서 유용하게 사용될 법한 것들로<br/>
+    실험적인 리액트 함수`experimental_taintObjectReference`, `experimental_taintUniqueValue`와<br/>
+    `server-only` 라이브러리를 적용해봤다.<br/><br/>
+
+    먼저 리액트의 보안 관련 함수를 사용하려면 넥스트 설정에 아래 내용을 추가한다.<br/>
+    ```javascript
+    const nextConfig = {
+      experimental: {
+        taint: true,
+      },
+      ...
+    ```
+    이후 아래 해킹행위를 가정한 함수에 해당 함수를 넣어준다.<br/>
+    아래 함수들은 모두 서버 컴포넌트에서 클라이언트 컴포넌트로의 데이터 전송을 감지해 화면에 오류를 띄운다.
+    ```javascript
+    'use server';
+   
+    import { experimental_taintObjectReference, experimental_taintUniqueValue } from 'react';
+    ...
+   
+    export const getHackedData = () => {
+      const keys = {
+        apiKey: '11134136',
+        secret: '32143125',
+      };
+      // error test
+      experimental_taintObjectReference('API Keys were leaked!!!', keys);
+      experimental_taintUniqueValue('Secret Key was exposed!', keys, keys.secret);
+      return keys;
+    };
+    ```
+    ![experimental_taintObjectReferece_message.JPG](public%2Fimages%2Fexperimental_taintObjectReferece_message.JPG)<br/>
+    ![experimental_taintUniqueValue_message.JPG](public%2Fimages%2Fexperimental_taintUniqueValue_message.JPG)<br/>
+
+    리액트에서 제공하는 위 함수들은 실험적인 기능 중 일부다.<br/>
+    이런 실험적 기능보다 완전한 형태로 도움을 받고자 한다면, server-only를 사용하는 방법이 있다.<br/>
+
+    ```javascript
+    import 'server-only';
+
+    export const fetchFromAPI = async () => {
+      await fetch('.....');
+    };
+    ```
+
+    위 함수를 클라이언트 컴포넌트에서 호출하면 아래 오류가 뜬다.<br/>
+   ![server-only-error.JPG](public%2Fimages%2Fserver-only-error.JPG)<br/>
 
 ## # 주의사항
 ___

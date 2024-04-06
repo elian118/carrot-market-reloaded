@@ -1,7 +1,8 @@
-import { fetchData, getData } from '@/app/extras/[[...potato]]/services';
+import { fetchData, getFetchData } from '@/app/extras/[[...potato]]/services';
 
 const Extras = async ({ params }: { params: { potato: string } }) => {
-  await getData(); // 단순 로그 테스트용
+  await getFetchData(); // 단순 로그 테스트용
+  // const hackedData = await getHackedData(); // 해킹 테스트용
 
   return (
     <div className="flex flex-col gap-3 py-10">
@@ -17,6 +18,8 @@ const Extras = async ({ params }: { params: { potato: string } }) => {
       <form action={fetchData}>
         <button>revalidate</button>
       </form>
+      <hr />
+      {/*<HackedComponent data={hackedData} />  // 해킹 테스트 클라이언트 컴포넌트*/}
     </div>
   );
 };
